@@ -102,7 +102,8 @@ var troubleshooting = 0;
 var increasedamping = 1;
 
 // Gravity vector
-var gravityVec = new Vector2D(0,0); 
+//var gravityVec = new Vector2D(0,0); 
+		gravityVec = new Vector2D(0.0,9.8 * gravity_scale);
 
 // Check for Android, since x/y coordinates are flipped for gyro gravity vector
 var OS_Android = false;
