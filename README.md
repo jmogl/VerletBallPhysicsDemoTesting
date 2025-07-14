@@ -1,4 +1,6 @@
-# Verlet Ball Physics Demo
+# Verlet Ball Physics Demo  (TESTING ONLY)
+WORKING ON GYRO ACCESS PERMISSION
+
 
 JavaScript Ball Physics 2D Simulation using Verlet Integration. Project goal is to learn JavaScript along with physics collision simulaton. This demo is a work in progress and not intended to be a robust application for every device / Web browser. Tested on iPhone & iPad (Chrome and Safari), Android Nexus 6P, Windows 10, Mac OSX.
 
@@ -10,7 +12,7 @@ By Jeff Miller. Released under MIT License. Last Update: 9/1/17
 - Stable stacked balls
 - Balls move based on gravity vector when tilted on a mobile device. If mobile device is in landscape, tilt mode is turned off and user is prompted to rotate to Portrait with Orientation lock turned on. A small check box at the lower right can toggle on and off, which works best on a tablet for now due to font size.
 
-[Click here to run the Demo!](https://jmogl.github.io/VerletBallPhysicsDemo/)	
+[Click here to run the Demo!](https://jmogl.github.io/VerletBallPhysicsDemoTesting/)	
 
 **References:**
 - [Verlet Collision with Impulse Preservation](http://codeflow.org/entries/2010/nov/29/verlet-collision-with-impulse-preservation/), an excellent physics tutorial by Florian Boesch. Approach to solving instability when objects are at rest.
