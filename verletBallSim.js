@@ -190,7 +190,9 @@ function init() {
 	mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 		
 	var simulation = new Simulation(context);
-
+	
+	gravityVec = Vector2D(0.0,9.8 * gravity_scale);
+	
 	// Setup accelerometer support for mobile devices
 	if (window.DeviceMotionEvent==undefined) {		
 		
@@ -198,7 +200,7 @@ function init() {
 //		console.log(window.DeviceMotionEvent);
 		
 		// Set default gravity to bottom of device: Y-axis
-		gravityVec = new Vector2D(0.0,9.8 * gravity_scale);
+//		gravityVec = new Vector2D(0.0,9.8 * gravity_scale);
 		tiltsupport = false;
 		}
 		else {
@@ -236,7 +238,7 @@ function init() {
   			} else {
     				tiltEnabled = false;
     				tiltsupport = false;
-    				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+    				gravityVec = Vector2D(0.0, 9.8 * gravity_scale);
     				enableBtn.textContent = "Enable Tilt";
     				console.log("Tilt disabled");
   				tiltCheckbox.checked =false;
