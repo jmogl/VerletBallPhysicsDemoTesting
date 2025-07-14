@@ -179,6 +179,13 @@ function init() {
 
 	// Turn off Tilt mode in landscape (axis flips on iOS)
 	getOrientation();
+
+
+	
+	// Ask to use gyro
+	requestOrientationPermission(); 
+
+	
 	
 	// Scale to standard height of sim is 1200
 	sim_scale = canvas.height / 1200;
