@@ -60,7 +60,6 @@ var fpsCounter = document.getElementById('fpscounter');
 // Tilt checkbox lower right corner for now...
 var tiltCheckbox = document.getElementById('tiltcheck');  
 	tiltCheckbox.checked = false;	
-var permissionGranted = false; // Used for requestOrientationPermission()
 
 // Text window at the bottom
 var bottomBorderHeight = 35; 
@@ -205,6 +204,7 @@ function init() {
 //			console.log(window.DeviceMotionEvent);
 
 			// Ask to use gyro via requestOrientationPermission() for iOS 
+			let permissionGranted = false; 
 			document.getElementById("enableMotionButton").addEventListener("click", () => {
   				requestOrientationPermission().then(() => {
     				permissionGranted = true;
