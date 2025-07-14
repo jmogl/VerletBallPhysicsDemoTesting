@@ -432,7 +432,8 @@ var Simulation = function(context){
 		// Ball mass = density * volume (4/3 * pi * r^3)
 		
 		// Load balls to the left of funnel to avoid generation onto wall
-		var bodyX = Math.random() * (width/4) + 25; 
+		//var bodyX = Math.random() * (width/4) + 25; 
+		var bodyX = Math.random() * (width/2) + 25; 
 		var bodyY = Math.random() * (height/2) + 25;
 		
 		var bodyRadius = Math.random() * 20 + 6; 
