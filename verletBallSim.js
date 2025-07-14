@@ -181,7 +181,7 @@ function init() {
 	getOrientation();
 
 
-	
+/*	
 	// Ask to use gyro
 	//requestOrientationPermission(); 
 	document.getElementById("enableMotionButton").addEventListener("click", () => {
@@ -189,7 +189,7 @@ function init() {
     	document.getElementById("enableMotionButton").style.display = "none";
   		});
 	});
-	
+*/	
 	
 	// Scale to standard height of sim is 1200
 	sim_scale = canvas.height / 1200;
@@ -203,7 +203,7 @@ function init() {
 	// Setup accelerometer support for mobile devices
 	if (window.DeviceMotionEvent==undefined) {		
 		
-		console.log("test");
+		console.log("No Gyro");
 //		console.log(window.DeviceMotionEvent);
 		
 		// Set default gravity to bottom of device: Y-axis
@@ -211,12 +211,19 @@ function init() {
 		tiltsupport = false;
 		}
 		else {
-			console.log("test2");
+			console.log("Mobile Device");
 //			console.log(window.DeviceMotionEvent);
-			
+
+			// Ask to use gyro via requestOrientationPermission() for iOS 
+			document.getElementById("enableMotionButton").addEventListener("click", () => {
+  				requestOrientationPermission().then(() => {
+    				document.getElementById("enableMotionButton").style.display = "none";
+  				});
+			});
+
 			window.addEventListener('devicemotion', handleMotionEvent); // Accelerometer gravity vector
-//			tiltsupport = true;
-			tiltsupport = false;
+			tiltsupport = true;
+//			tiltsupport = false;
 			
 	}
 
