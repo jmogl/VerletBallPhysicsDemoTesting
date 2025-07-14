@@ -61,6 +61,8 @@ var fpsCounter = document.getElementById('fpscounter');
 var tiltCheckbox = document.getElementById('tiltcheck');  
 	tiltCheckbox.checked = false;	
 
+let tiltEnabled = false; // Track if tilt button is selected for mobile devices
+
 // Text window at the bottom
 var bottomBorderHeight = 35; 
 
@@ -201,8 +203,9 @@ function init() {
 		}
 		else {
 			console.log("Mobile Device");
-//			console.log(window.DeviceMotionEvent);
 
+// Early Version Working
+/*			
 			// Ask to use gyro via requestOrientationPermission() for iOS 
 			let permissionGranted = false; 
 			document.getElementById("enableMotionButton").addEventListener("click", () => {
@@ -219,7 +222,26 @@ function init() {
 			else {
 				tiltsupport = false;
 			}		
-	}
+*/
+			const enableBtn = document.getElementById("enableMotionButton");
+			enableBtn.addEventListener("click", () => {
+  			if (!tiltEnabled) {
+    				requestOrientationPermission().then(() => {
+      				tiltEnabled = true;
+      				tiltsupport = true;
+      				enableBtn.textContent = "Disable Tilt";
+      				console.log("Tilt enabled");
+    				});
+  			} else {
+    				tiltEnabled = false;
+    				tiltsupport = false;
+    				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+    				enableBtn.textContent = "Enable Tilt";
+    				console.log("Tilt disabled");
+  				}
+				});
+			
+ 	}
 
 	// Check to see if OS is Android since gyro x/y axis are flipped (From Stack Overflow)
 	var ua = navigator.userAgent.toLowerCase();
