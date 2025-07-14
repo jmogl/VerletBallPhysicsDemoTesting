@@ -61,6 +61,8 @@ var fpsCounter = document.getElementById('fpscounter');
 var tiltCheckbox = document.getElementById('tiltcheck');  
 	tiltCheckbox.checked = false;	
 
+let tiltEnabled = false; // Track if tilt button is selected for mobile devices
+
 // Text window at the bottom
 var bottomBorderHeight = 35; 
 
@@ -201,8 +203,9 @@ function init() {
 		}
 		else {
 			console.log("Mobile Device");
-//			console.log(window.DeviceMotionEvent);
 
+// Early Version Working
+/*			
 			// Ask to use gyro via requestOrientationPermission() for iOS 
 			let permissionGranted = false; 
 			document.getElementById("enableMotionButton").addEventListener("click", () => {
@@ -219,7 +222,28 @@ function init() {
 			else {
 				tiltsupport = false;
 			}		
-	}
+*/
+			const enableBtn = document.getElementById("enableMotionButton");
+			enableBtn.addEventListener("click", () => {
+  			if (!tiltEnabled) {
+    				requestOrientationPermission().then(() => {
+      				tiltEnabled = true;
+      				tiltsupport = true;
+      				enableBtn.textContent = "Disable Tilt";
+      				console.log("Tilt enabled");
+    				tiltCheckbox.checked = true;
+				});
+  			} else {
+    				tiltEnabled = false;
+    				tiltsupport = false;
+    				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+    				enableBtn.textContent = "Enable Tilt";
+    				console.log("Tilt disabled");
+  				tiltCheckbox.checked =false;
+				}
+				});
+			
+ 	}
 
 	// Check to see if OS is Android since gyro x/y axis are flipped (From Stack Overflow)
 	var ua = navigator.userAgent.toLowerCase();
@@ -248,7 +272,9 @@ function handleMotionEvent(event) {
 		tiltsupport = false;
 	}
 
-	if (tiltsupport == false || tiltCheckbox.checked == false){ 
+
+	//TODO UPDATE THIS TO REMOVE CHECK BOX	
+	if (tiltsupport == false || tiltCheckbox.checked == false || tiltEnabled == false){ 
 		gravityVec.x = 0;
 		gravityVec.y = 9.8 * gravity_scale * sim_scale;
 		tiltCheckbox.checked = false; // uncheck if gravity vector not supported
@@ -409,6 +435,7 @@ var Simulation = function(context){
 		
 		// Load balls to the left of funnel to avoid generation onto wall
 		var bodyX = Math.random() * (width/4) + 25; 
+		//var bodyX = Math.random() * (width/2) + 25; 
 		var bodyY = Math.random() * (height/2) + 25;
 		
 		var bodyRadius = Math.random() * 20 + 6; 
@@ -919,3 +946,4 @@ var Simulation = function(context){
 		}
 	}
 }
+
