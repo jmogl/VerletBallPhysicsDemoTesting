@@ -231,14 +231,16 @@ function init() {
       				tiltsupport = true;
       				enableBtn.textContent = "Disable Tilt";
       				console.log("Tilt enabled");
-    				});
+    				tiltCheckbox.checked = true;
+				});
   			} else {
     				tiltEnabled = false;
     				tiltsupport = false;
     				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
     				enableBtn.textContent = "Enable Tilt";
     				console.log("Tilt disabled");
-  				}
+  				tiltCheckbox.checked =false;
+				}
 				});
 			
  	}
