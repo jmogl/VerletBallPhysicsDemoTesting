@@ -183,8 +183,12 @@ function init() {
 
 	
 	// Ask to use gyro
-	requestOrientationPermission(); 
-
+	//requestOrientationPermission(); 
+	document.getElementById("enableMotionButton").addEventListener("click", () => {
+  		requestOrientationPermission().then(() => {
+    	document.getElementById("enableMotionButton").style.display = "none";
+  		});
+	});
 	
 	
 	// Scale to standard height of sim is 1200
