@@ -179,17 +179,6 @@ function init() {
 
 	// Turn off Tilt mode in landscape (axis flips on iOS)
 	getOrientation();
-
-
-/*	
-	// Ask to use gyro
-	//requestOrientationPermission(); 
-	document.getElementById("enableMotionButton").addEventListener("click", () => {
-  		requestOrientationPermission().then(() => {
-    	document.getElementById("enableMotionButton").style.display = "none";
-  		});
-	});
-*/	
 	
 	// Scale to standard height of sim is 1200
 	sim_scale = canvas.height / 1200;
@@ -217,14 +206,18 @@ function init() {
 			// Ask to use gyro via requestOrientationPermission() for iOS 
 			document.getElementById("enableMotionButton").addEventListener("click", () => {
   				requestOrientationPermission().then(() => {
-    				document.getElementById("enableMotionButton").style.display = "none";
+    				permissionGranted = true;
+				document.getElementById("enableMotionButton").style.display = "none";
   				});
 			});
 
 			window.addEventListener('devicemotion', handleMotionEvent); // Accelerometer gravity vector
-			tiltsupport = true;
-//			tiltsupport = false;
-			
+			if (permissionGranted == true) {
+				tiltsupport = true;
+			}
+			else {
+				tiltsupport = false;
+			}		
 	}
 
 	// Check to see if OS is Android since gyro x/y axis are flipped (From Stack Overflow)
