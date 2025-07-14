@@ -60,6 +60,7 @@ var fpsCounter = document.getElementById('fpscounter');
 // Tilt checkbox lower right corner for now...
 var tiltCheckbox = document.getElementById('tiltcheck');  
 	tiltCheckbox.checked = false;	
+var permissionGranted = false; // Used for requestOrientationPermission()
 
 // Text window at the bottom
 var bottomBorderHeight = 35; 
