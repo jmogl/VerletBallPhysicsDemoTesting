@@ -1,5 +1,6 @@
 /*
 *	Ball Physics Simulation Javascript Demo - Version 2 - 8/31/17
+*         UPDATE: 7/13/25 - Version 2.1 Testing for permission to use mobile gyro 
 *	Copyright: 2017 - Jeff Miller
 *	License: MIT
 *	
@@ -137,6 +138,34 @@ function getOrientation(){
 		orientchk = true;
 	}
 }
+
+async function requestOrientationPermission() {
+	// Only needed on iOS 13+ where permission is required
+	if (typeof DeviceOrientationEvent !== "undefined" &&
+			typeof DeviceOrientationEvent.requestPermission === "function") {
+		try {
+			const response = await DeviceOrientationEvent.requestPermission();
+			if (response === "granted") {
+				console.log("Device orientation permission granted.");
+				window.addEventListener('devicemotion', handleMotionEvent);
+				tiltsupport = true;
+			} else {
+				console.warn("Device orientation permission denied.");
+				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+				tiltsupport = false;
+			}
+		} catch (e) {
+			console.error("Error requesting orientation permission:", e);
+			gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+			tiltsupport = false;
+		}
+	} else {
+		// Other platforms: just add listener directly
+		window.addEventListener('devicemotion', handleMotionEvent);
+		tiltsupport = true;
+	}
+}
+
 
 // initialize the simulation
 function init() { 
