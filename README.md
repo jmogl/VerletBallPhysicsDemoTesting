@@ -15,7 +15,7 @@ By Jeff Miller. Released under MIT License. Last Update: 9/1/17
 [Click here to run the Demo!](https://jmogl.github.io/VerletBallPhysicsDemoTesting/)	
 
 **References:**
-- [Verlet Collision with Impulse Preservation]([http://codeflow.org/entries/2010/nov/29/verlet-collision-with-impulse-preservation/](https://web.archive.org/web/20180118011218/http://codeflow.org/entries/2010/nov/29/verlet-collision-with-impulse-preservation/), an excellent physics tutorial by Florian Boesch. Approach to solving instability when objects are at rest.
+- [Verlet Collision with Impulse Preservation (https://web.archive.org/web/20180118011218/http://codeflow.org/entries/2010/nov/29/verlet-collision-with-impulse-preservation/), an excellent physics tutorial by Florian Boesch. Approach to solving instability when objects are at rest.
 
 - [Physics for Games, Animations, and Simulations with HTML5 by Dev Ramtel and Adrian Dobre, ISBN-13: 978-1-4302-6338-8](https://github.com/devramtal/Physics-for-JavaScript-Games-Animation-Simulations). A great reference for starting out with physics simulations in JavaScript. Made modifications to angled wall collision algorithm for multiple ball stability.
 
