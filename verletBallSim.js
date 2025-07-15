@@ -137,10 +137,12 @@ function getOrientation(){
 
 	// Turn off tilt mode if device is in Landscape mode
 	if (orientation == "Landscape"){
-		tiltCheckbox.checked = false;
+//		tiltCheckbox.checked = false;
+		tiltEnabled = false;
 		orientchk = false;
 	}else {
-		tiltCheckbox.checked = true;
+//		tiltCheckbox.checked = true;
+		
 		orientchk = true;
 	}
 }
