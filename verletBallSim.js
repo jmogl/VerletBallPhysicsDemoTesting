@@ -57,9 +57,13 @@ var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d'); 
 var fpsCounter = document.getElementById('fpscounter');
 
+
+/*
 // Tilt checkbox lower right corner for now...
 var tiltCheckbox = document.getElementById('tiltcheck');  
 	tiltCheckbox.checked = false;	
+*/
+
 
 let tiltEnabled = false; // Track if tilt button is selected for mobile devices
 
@@ -223,6 +227,7 @@ function init() {
 				tiltsupport = false;
 			}		
 */
+    			tiltsupport = false;
 			const enableBtn = document.getElementById("enableMotionButton");
 			enableBtn.addEventListener("click", () => {
   			if (!tiltEnabled) {
@@ -230,18 +235,17 @@ function init() {
       				tiltEnabled = true;
       				tiltsupport = true;
       				enableBtn.textContent = "Disable Tilt";
-      				console.log("Tilt enabled");
-    				tiltCheckbox.checked = true;
+//      				console.log("Tilt enabled");
+//    				tiltCheckbox.checked = true;
 				});
   			} else {
     				tiltEnabled = false;
-    				tiltsupport = false;
     				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
     				enableBtn.textContent = "Enable Tilt";
     				console.log("Tilt disabled");
-  				tiltCheckbox.checked =false;
+//  				tiltCheckbox.checked =false;
 				}
-				});
+			});
 			
  	}
 
@@ -274,15 +278,15 @@ function handleMotionEvent(event) {
 
 
 	//TODO UPDATE THIS TO REMOVE CHECK BOX	
-	if (tiltsupport == false || tiltCheckbox.checked == false || tiltEnabled == false){ 
+	if (tiltsupport == false || tiltEnabled == false){ 
 		gravityVec.x = 0;
 		gravityVec.y = 9.8 * gravity_scale * sim_scale;
 		tiltCheckbox.checked = false; // uncheck if gravity vector not supported
 	} else {		
 		gravityVec.x = ax * gravity_scale*sim_scale;
 		gravityVec.y = ay * gravity_scale*sim_scale;
-		     tiltCheckbox.checked == false;  //NEED THIS?
-		tiltsupport = true;
+//		     tiltCheckbox.checked == false;  //NEED THIS?
+//		tiltsupport = true;
 	}
 }
 	
