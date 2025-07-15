@@ -283,7 +283,7 @@ function handleMotionEvent(event) {
 	if (tiltsupport == false || tiltEnabled == false){ 
 		gravityVec.x = 0;
 		gravityVec.y = 9.8 * gravity_scale * sim_scale;
-		tiltCheckbox.checked = false; // uncheck if gravity vector not supported
+//		tiltCheckbox.checked = false; // uncheck if gravity vector not supported
 	} else {		
 		gravityVec.x = ax * gravity_scale*sim_scale;
 		gravityVec.y = ay * gravity_scale*sim_scale;
