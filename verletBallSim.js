@@ -23,7 +23,7 @@
 *	ISBN-13: 978-1-4302-6338-8
 *	
 *	Dependencies:
-*	verletBallSim.js		- Physics Simulation
+*	verletBallSim.js	- Physics Simulation
 *	Hammer.js			- Touch library (http://hammerjs.github.io/)
 *	Mainloop.js			- Managing main loop & FPS (https://github.com/IceCreamYou/MainLoop.js)
 *	Vector2D.js			- Basic vector methods 
@@ -68,7 +68,7 @@ var tiltCheckbox = document.getElementById('tiltcheck');
 let tiltEnabled = false; // Track if tilt button is selected for mobile devices
 
 // Text window at the bottom
-var bottomBorderHeight = 35; 
+var bottomBorderHeight = 55; 
 
 // Simulation scaling
 var sim_scale = 1;
@@ -232,7 +232,7 @@ function init() {
 			}		
 */
     			tiltsupport = false;
-			const enableBtn = document.getElementById("enableMotionButton");
+			const enableBtn = document.getElementById("enableTiltButton");
 			enableBtn.addEventListener("click", () => {
   			if (!tiltEnabled) {
     				requestOrientationPermission().then(() => {
@@ -240,14 +240,12 @@ function init() {
       				tiltsupport = true;
       				enableBtn.textContent = "Disable Tilt";
       				console.log("Tilt enabled");
-//    				tiltCheckbox.checked = true;
 				});
   			} else {
     				tiltEnabled = false;
     				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
     				enableBtn.textContent = "Enable Tilt";
     				console.log("Tilt disabled");
-//  				tiltCheckbox.checked =false;
 				}
 			});
 			
@@ -280,17 +278,13 @@ function handleMotionEvent(event) {
 		tiltsupport = false;
 	}
 
-
-	//TODO UPDATE THIS TO REMOVE CHECK BOX	
 	if (tiltsupport == false || tiltEnabled == false){ 
 		gravityVec.x = 0;
 		gravityVec.y = 9.8 * gravity_scale * sim_scale;
-//tiltCheckbox.checked = false; // uncheck if gravity vector not supported
+
 	} else {		
 		gravityVec.x = ax * gravity_scale*sim_scale;
 		gravityVec.y = ay * gravity_scale*sim_scale;
-//		     tiltCheckbox.checked == false;  //NEED THIS?
-//		tiltsupport = true;
 	}
 }
 	
