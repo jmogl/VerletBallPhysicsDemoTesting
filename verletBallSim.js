@@ -106,7 +106,9 @@ var troubleshooting = 0;
 var increasedamping = 1;
 
 // Gravity vector
-var gravityVec = new Vector2D(0,0); 
+//var gravityVec = new Vector2D(0,0); 
+var gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+
 
 // Check for Android, since x/y coordinates are flipped for gyro gravity vector
 var OS_Android = false;
@@ -237,7 +239,7 @@ function init() {
       				tiltEnabled = true;
       				tiltsupport = true;
       				enableBtn.textContent = "Disable Tilt";
-//      				console.log("Tilt enabled");
+      				console.log("Tilt enabled");
 //    				tiltCheckbox.checked = true;
 				});
   			} else {
@@ -953,4 +955,3 @@ var Simulation = function(context){
 		}
 	}
 }
-
