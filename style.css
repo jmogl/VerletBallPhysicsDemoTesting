@@ -13,9 +13,6 @@ body {
 }
 
 #canvas {
-  background-color: #fff;
-  
-/*  
   position: absolute;
   top: 0;
   left: 0;
@@ -25,11 +22,7 @@ body {
   z-index: 0;
    
  // Instead of full height, subtract some fixed height for bottom UI
- 
  // height: calc(100vh - 55px); // Matches bottomBorderHeight //
- // background-color: #fff;
- // z-index: 0;
-*/
 }
 
 #enableTiltButton {
