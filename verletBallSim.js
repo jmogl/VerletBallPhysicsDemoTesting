@@ -1,6 +1,6 @@
 /*
 *	Ball Physics Simulation Javascript Demo - Version 2 - 8/31/17
-*         UPDATE: 7/13/25 - Version 2.1 Testing for permission to use mobile gyro 
+*         UPDATE: 7/15/25 - Version 2.1 Testing for permission to use mobile gyro 
 *	Copyright: 2017 - Jeff Miller
 *	License: MIT
 *	
@@ -68,7 +68,7 @@ var tiltCheckbox = document.getElementById('tiltcheck');
 let tiltEnabled = false; // Track if tilt button is selected for mobile devices
 
 // Text window at the bottom
-var bottomBorderHeight = 35; 
+var bottomBorderHeight = 55; 
 
 // Simulation scaling
 var sim_scale = 1;
@@ -212,26 +212,9 @@ function init() {
 		else {
 			console.log("Mobile Device");
 
-// Early Version Working
-/*			
-			// Ask to use gyro via requestOrientationPermission() for iOS 
-			let permissionGranted = false; 
-			document.getElementById("enableMotionButton").addEventListener("click", () => {
-  				requestOrientationPermission().then(() => {
-    				permissionGranted = true;
-				document.getElementById("enableMotionButton").style.display = "none";
-  				});
-			});
-
-			window.addEventListener('devicemotion', handleMotionEvent); // Accelerometer gravity vector
-			if (permissionGranted == true) {
-				tiltsupport = true;
-			}
-			else {
-				tiltsupport = false;
-			}		
-*/
-    			tiltsupport = false;
+	
+		// Ask to use gyro via requestOrientationPermission() for iOS 
+			tiltsupport = false;
 			const enableBtn = document.getElementById("enableTiltButton");
 			enableBtn.addEventListener("click", () => {
   			if (!tiltEnabled) {
@@ -929,7 +912,8 @@ var Simulation = function(context){
 
 	function end(fps, panic) {
 		if (orientchk == false && tiltsupport == true){
-			var notifytxt = ", Turn on device rotation lock in Portrait Mode when using Tilt mode!"
+			// Todo: Is there a way to automate this in JS?
+			var notifytxt = ", Turn on rotation lock in Tilt mode!"
 			} else {
 			notifytxt = " ";
 		}
