@@ -68,7 +68,7 @@ var tiltCheckbox = document.getElementById('tiltcheck');
 let tiltEnabled = false; // Track if tilt button is selected for mobile devices
 
 // Text window at the bottom
-var bottomBorderHeight = 55; 
+var bottomBorderHeight = 35; 
 
 // Simulation scaling
 var sim_scale = 1;
