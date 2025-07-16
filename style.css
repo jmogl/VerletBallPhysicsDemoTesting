@@ -26,12 +26,4 @@ body {
     display: block;
     right: 50px;
 	z-index: 1;
-   }
-
-
-#tiltcheck {
-    position: absolute;
-	bottom: 2px;
-    display: block;
-    right: 20px;
 }
