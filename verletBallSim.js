@@ -45,6 +45,25 @@
 *	- Add simple count for the funnel
 *	- Add raytracing :-) (i.e. Use three.js)
 *	- Add a GUI usable on a phone device. Currently using a check box to turn the gravity tilt mode on and off is hard to see on a phone.
+*
+*   - Add iOS check
+	function isiOS() {
+		return /iPad|iPhone|iPod/.test(navigator.userAgent);
+	}
+
+	function isAndroid() {
+		return /android/i.test(navigator.userAgent);
+	}
+
+	canvas.width = window.innerWidth;
+
+	if (isiOS() || isAndroid()) {
+	// Subtract bottom UI bar height only on mobile
+	canvas.height = window.innerHeight - bottomBorderHeight;
+		} else {
+	// Full height on desktop
+	canvas.height = window.innerHeight;
+	}
 */
 
 // Force restrictive declarations
