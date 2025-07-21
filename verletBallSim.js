@@ -1,7 +1,7 @@
 /*
 *	Ball Physics Simulation Javascript Demo - Version 2 - 8/31/17
 *         UPDATE: 7/20/25 - Version 2.1 Testing for permission to use mobile gyro 
-*	Copyright: 2017 Jeff Miller
+*	Copyright: 2017 - Jeff Miller
 *	License: MIT
 *	
 *	Goal is to learn Javascript by developing a ball physics simulation.
@@ -23,7 +23,7 @@
 *	ISBN-13: 978-1-4302-6338-8
 *	
 *	Dependencies:
-*	verletBallSim.js		- Physics Simulation
+*	verletBallSim.js	- Physics Simulation
 *	Hammer.js			- Touch library (http://hammerjs.github.io/)
 *	Mainloop.js			- Managing main loop & FPS (https://github.com/IceCreamYou/MainLoop.js)
 *	Vector2D.js			- Basic vector methods 
@@ -40,9 +40,14 @@
 *	- Added scaling for gravity and touch velocity across devices (displays) - 8/26/17
 *	- Turned off tilt mode when device is switched to landscape and provide notification to lock portrait mode - 8/26/17
 *	- Cleaned up formatting for GitHub - 9/1/17
+*   - 7/20/25 Updates:
+*     Added permission check to us gyro on iOS devices -7/20/25
+*     Added inverse funnel
+*     Updated to stop simulation in landscape mode for mobile devices 
+*     Added a button to Tilt mode (Gyro) on / off
 *	
 *	To Do:
-*	- Add simple count for the funnel
+*
 *	- Add raytracing :-) (i.e. Use three.js)
 *	- Add a GUI usable on a phone device. Currently using a check box to turn the gravity tilt mode on and off is hard to see on a phone.
 *
@@ -83,6 +88,7 @@ var tiltCheckbox = document.getElementById('tiltcheck');
 	tiltCheckbox.checked = false;	
 */
 
+let simulationPaused = false; // Pause if in Landscape on mobile device
 
 let tiltEnabled = false; // Track if tilt button is selected for mobile devices
 
@@ -153,6 +159,20 @@ window.onresize = function(){
 
 };
 
+
+// Check if on Mobile device for portrait / landscape
+function isMobileDevice() {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+function isPortrait() {
+  return window.matchMedia("(orientation: portrait)").matches;
+}
+
+function isLandscape() {
+  return window.matchMedia("(orientation: landscape)").matches;
+}
+
 function getOrientation(){
 	var orientation = window.innerWidth > window.innerHeight ? "Landscape" : "Portrait";
 
@@ -161,10 +181,11 @@ function getOrientation(){
 //		tiltCheckbox.checked = false;
 		tiltEnabled = false;
 		orientchk = false;
+		simulationPaused = true;
 	}else {
 //		tiltCheckbox.checked = true;
-		
 		orientchk = true;
+		simulationPaused = false;
 	}
 }
 
@@ -412,11 +433,11 @@ var Simulation = function(context){
 	var height = context.canvas.height - bottomBorderHeight; 
 	
 	// Energy loss on collision (1=elastic)
-	//var damping = 0.8;
+//	var damping = 0.8;	
 	var damping = 0.7;
-	
+
 	var interval;
-	
+		
 	// for interior collision detection
 	var walls = new Array();	
 	
@@ -911,6 +932,11 @@ var Simulation = function(context){
 	*	move the object by its inertia and preserve its impulse when constrained.
 	*/		
 	var step = function(){
+		
+		if(isMobileDevice()){
+			if (isLandscape()) return; // Do not run in Landscape mode.
+		}
+		//if (simulationPaused) return; // Do not run if in Landscape on mobile device
 		var steps = 2; // 2 original steps; increase steps per interval for increased accuracy
 		var delta = 1/steps;
 		for(var i=0; i<steps; i++){
