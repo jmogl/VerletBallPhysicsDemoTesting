@@ -483,7 +483,7 @@ var Simulation = function(context){
 	// Interior angled walls with collision detection (i.e. The Funnel)
 	while(walls.length < 1 ){
 
-		// Funnel
+		// Funnel 1
 		// Scaling for width and height
 		var wall1=new Wall(new Vector2D((width/3),height/6),new Vector2D((width/2.2),height/3.5));
 		walls.push(wall1);
@@ -491,14 +491,12 @@ var Simulation = function(context){
 		var wall2=new Wall(new Vector2D(width*0.68,height/6),new Vector2D((width/1.8),height/3.5));
 		walls.push(wall2);
 			
-		//Ramp1
-//		var wall3=new Wall(new Vector2D(width/4,height/2.25),new Vector2D((width/3.2),height/2));
-//		walls.push(wall3);	
+		//Funnel 2
+		var wall3=new Wall(new Vector2D(width/3,height/2),new Vector2D((width/2.2),height/2.5));
+		walls.push(wall3);	
 		
-		//Ramp2
-		var wall4=new Wall(new Vector2D(width/6,height/2.25),new Vector2D((width/8),height/2));
-		walls.push(wall4);
-
+		var wall4=new Wall(new Vector2D(width*0.68,height/2),new Vector2D((width/1.8),height/2.5));
+		walls.push(wall4);	
 	}
 		
 	if (initwallcheck == false){ 
