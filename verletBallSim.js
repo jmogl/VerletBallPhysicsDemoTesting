@@ -1,6 +1,6 @@
 /*
 *	Ball Physics Simulation Javascript Demo - Version 2 - 8/31/17
-*         UPDATE: 7/15/25 - Version 2.1 Testing for permission to use mobile gyro 
+*         UPDATE: 7/20/25 - Version 2.1 Testing for permission to use mobile gyro 
 *	Copyright: 2017 - Jeff Miller
 *	License: MIT
 *	
@@ -481,14 +481,24 @@ var Simulation = function(context){
 	var bottomBorder = new Line(new Vector2D(0,height),new Vector2D(width,height));
 
 	// Interior angled walls with collision detection (i.e. The Funnel)
-	while(walls.length < 2 ){
+	while(walls.length < 1 ){
 
+		// Funnel
 		// Scaling for width and height
 		var wall1=new Wall(new Vector2D((width/3),height/6),new Vector2D((width/2.2),height/3.5));
 		walls.push(wall1);
 			
 		var wall2=new Wall(new Vector2D(width*0.68,height/6),new Vector2D((width/1.8),height/3.5));
 		walls.push(wall2);
+			
+		//Ramp1
+//		var wall3=new Wall(new Vector2D(width/4,height/2.25),new Vector2D((width/3.2),height/2));
+//		walls.push(wall3);	
+		
+		//Ramp2
+		var wall4=new Wall(new Vector2D(width/6,height/2.25),new Vector2D((width/8),height/2));
+		walls.push(wall4);
+
 	}
 		
 	if (initwallcheck == false){ 
