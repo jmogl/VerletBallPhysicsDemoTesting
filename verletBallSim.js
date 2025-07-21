@@ -1,7 +1,7 @@
 /*
 *	Ball Physics Simulation Javascript Demo - Version 2 - 8/31/17
 *         UPDATE: 7/20/25 - Version 2.1 Testing for permission to use mobile gyro 
-*	Copyright: 2017 - Jeff Miller
+*	Copyright: 2017 Jeff Miller
 *	License: MIT
 *	
 *	Goal is to learn Javascript by developing a ball physics simulation.
@@ -23,7 +23,7 @@
 *	ISBN-13: 978-1-4302-6338-8
 *	
 *	Dependencies:
-*	verletBallSim.js	- Physics Simulation
+*	verletBallSim.js		- Physics Simulation
 *	Hammer.js			- Touch library (http://hammerjs.github.io/)
 *	Mainloop.js			- Managing main loop & FPS (https://github.com/IceCreamYou/MainLoop.js)
 *	Vector2D.js			- Basic vector methods 
