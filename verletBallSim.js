@@ -93,7 +93,7 @@ var bottomBorderHeight = 55;
 var sim_scale = 1;
 
 // Reduce overall gravity. Standard g = 9.8 m/s^2
-const gravity_scale = 0.1;
+const gravity_scale = 0.05;
 
 /*
 * Hammer Touch setup
@@ -431,7 +431,7 @@ var Simulation = function(context){
 	var colors = ['#0000ff', '#ff0000', '#00ff00', '#ffa500'];	
 	
 	// Max number of balls on screen. 
-	const balls_Max = 100;
+	const balls_Max = 150;
 	
 	while(bodies.length < balls_Max){
 
