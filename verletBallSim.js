@@ -412,7 +412,9 @@ var Simulation = function(context){
 	var height = context.canvas.height - bottomBorderHeight; 
 	
 	// Energy loss on collision (1=elastic)
-	var damping = 0.8;	
+	//var damping = 0.8;
+	var damping = 0.7;
+	
 	var interval;
 	
 	// for interior collision detection
