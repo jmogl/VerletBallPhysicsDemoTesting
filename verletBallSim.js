@@ -50,6 +50,7 @@
 *	- Add raytracing :-) (i.e. Use three.js)
 *	- Add a GUI usable on a phone device. Currently using a check box to turn the gravity tilt mode on and off is hard to see on a phone.
 *
+*/
 
 // Force restrictive declarations
 "use strict"; 
