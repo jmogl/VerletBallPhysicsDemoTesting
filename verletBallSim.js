@@ -932,10 +932,17 @@ var Simulation = function(context){
 	*	move the object by its inertia and preserve its impulse when constrained.
 	*/		
 	var step = function(){
-		
+
+/*		
 		if(isMobileDevice()){
 			if (isLandscape()) return; // Do not run in Landscape mode.
 		}
+*/
+
+		if (isMobileDevice() && isLandscape()) {
+			return; // Skip simulation steps
+		}
+
 		//if (simulationPaused) return; // Do not run if in Landscape on mobile device
 		var steps = 2; // 2 original steps; increase steps per interval for increased accuracy
 		var delta = 1/steps;
@@ -966,9 +973,9 @@ var Simulation = function(context){
 	*/
 
 	function end(fps, panic) {
-		if (orientchk == false && tiltsupport == true){
+		if (isMobileDevice() && isLandscape()){
 			// Todo: Is there a way to automate this in JS?
-			var notifytxt = ", Turn on rotation lock in Tilt mode!"
+			var notifytxt = ", Rotate To Portrait"
 			} else {
 			notifytxt = " ";
 		}
