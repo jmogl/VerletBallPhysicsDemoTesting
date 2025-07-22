@@ -175,7 +175,7 @@ function isLandscape() {
 
 function getOrientation(){
 	var orientation = window.innerWidth > window.innerHeight ? "Landscape" : "Portrait";
-
+/*
 	// Turn off tilt mode if device is in Landscape mode
 	if (orientation == "Landscape"){
 //		tiltCheckbox.checked = false;
@@ -187,6 +187,20 @@ function getOrientation(){
 		orientchk = true;
 		simulationPaused = false;
 	}
+*/
+
+    const wasPaused = simulationPaused;
+    const inLandscape = isLandscape();
+
+    if (isMobileDevice()) {
+        simulationPaused = inLandscape;
+        orientchk = !inLandscape;
+
+        if (wasPaused !== simulationPaused) {
+            console.log("Orientation changed. Paused: " + simulationPaused);
+        }
+    }
+
 }
 
 async function requestOrientationPermission() {
@@ -974,7 +988,7 @@ var Simulation = function(context){
 
 	function end(fps, panic) {
 		if (isMobileDevice() && isLandscape()){
-			// Todo: Is there a way to automate this in JS?
+		
 			var notifytxt = ", Rotate To Portrait"
 			} else {
 			notifytxt = " ";
