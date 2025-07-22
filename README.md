@@ -2,7 +2,7 @@
 
 JavaScript Ball Physics 2D Simulation using Verlet Integration. Project goal is to learn JavaScript along with physics collision simulaton. This demo is a work in progress and not intended to be a robust application for every device / Web browser, but should work on most devices. Please submit an Issue if it is not working and include info on the device and browser version.
 
-By Jeff Miller. Released under MIT License. Last Update: 9/1/17
+By Jeff Miller. Released under MIT License. 
 
 **Features:**
 - Touching near a ball will pull it to the mouse or touch location. Spring force will hold it in place when dragged, but the ball can get dropped.
