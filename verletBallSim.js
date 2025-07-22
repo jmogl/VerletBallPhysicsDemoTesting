@@ -39,17 +39,18 @@
 *	- Added scaling for gravity and touch velocity across devices (displays) - 8/26/17
 *	- Turned off tilt mode when device is switched to landscape and provide notification to lock portrait mode - 8/26/17
 *	- Cleaned up formatting for GitHub - 9/1/17
-*   - 7/23/25 Updates:
-*     Added permission check to us gyro on iOS devices -7/20/25
-*     Added inverse funnel
-*     Updated to stop simulation in landscape mode for mobile devices 
-*     Added a button to Tilt mode (Gyro) on / off
+*   	- 7/23/25 Updates:
+*     		Added permission check to us gyro on iOS devices -7/20/25
+*     		Added inverse funnel
+*     		Updated to stop simulation in landscape mode for mobile devices 
+*     		Added a button to turn on Tilt mode (Gyro) on / off
 *	
 *	To Do:
 *
-*	- Add raytracing :-) (i.e. Use three.js)
-*	- Add a GUI usable on a phone device. Currently using a check box to turn the gravity tilt mode on and off is hard to see on a phone.
-*
+*	- May add an option to dynamically change the interior wall obstructions, but need to fix an issue where the ball sticks if the wall is shallow. 
+*	- Every once in a while, the collision detection adds energy and balls explode due to a singularity probably from the wall edge collision detection.  
+*	- Replace the Enable Tilt button with a proper pop up menu
+*	- Switch from Canvas to webgl using three.js. 
 */
 
 // Force restrictive declarations
