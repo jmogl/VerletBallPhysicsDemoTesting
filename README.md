@@ -9,6 +9,7 @@ By Jeff Miller. Released under MIT License.
 - General sloped wall collision detection
 - Stable stacked balls
 - Balls move based on gravity vector when tilted on a mobile device. If mobile device is in landscape, tilt mode is turned off and user is prompted to rotate to Portrait with Orientation lock turned on. A small check box at the lower right can toggle on and off, which works best on a tablet for now due to font size.
+- Updated code to pause simulation in Landscape mode. Javasript can not force portrait mode lock on some devices like (i.e. iOS).
 
 [Click here to run the Demo!](https://jmogl.github.io/VerletBallPhysicsDemoTesting/)	
 
@@ -26,6 +27,7 @@ By Jeff Miller. Released under MIT License.
 - style.css: Cascading style sheet for web page formatting
 
 **To Do:**
-- Add a GUI for phones. The small checkbox on the lower right is hard to see on small devices.
-- Add simple scoring for the funnel
-- Incorporate Three.js library for 3D
+- May add an option to dynamically change the interior wall obstructions, but need to fix an issue where the ball sticks if the wall is shallow.
+- Every once in a while, the collision detection adds energy and balls explode due to a singularity probably from the wall edge collision detection.  
+- Replace the Enable Tilt button with a proper pop up menu
+- Switch from Canvas to webgl using three.js. 
