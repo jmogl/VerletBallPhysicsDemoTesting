@@ -826,7 +826,7 @@ var Simulation = function(context){
 		context.clearRect(0, 0, width, height + bottomBorderHeight);
 		context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
 		context.fillStyle = 'rgba(234, 151, 43, 1.0)';
-		var k = 0.008; // Spring constant for drag spring force
+		var k = 0.004; // Spring constant for drag spring force
 		var objToTouchVec = new Vector2D(0,0);
 			
 		// Draw bottom border
