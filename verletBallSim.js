@@ -1,13 +1,12 @@
 /*
-*	Ball Physics Simulation Javascript Demo - Version 2 - 8/31/17
-*         UPDATE: 7/20/25 - Version 2.1 Testing for permission to use mobile gyro 
-*	Copyright: 2017 - Jeff Miller
+*	Ball Physics Simulation Javascript Demo - Version 2.1 7/23/25
+*       
+*	Copyright: 2017+  Jeff Miller
 *	License: MIT
 *	
 *	Goal is to learn Javascript by developing a ball physics simulation.
 *	This app is a work in progress and not intended to be a robust application for every web browser.
-*	Tested on iPhone & iPad (Chrome and Safari), Android Nexus 6P, Windows 10, and Mac OSX
-*	iOS does not allow Portrait lock to be set from Javascript or set full screen, so future version will prompt user to lock portrait mode
+*	iOS does not allow Portrait lock to be set from Javascript or set full screen, so simulation pauses in Landscape mode
 *	
 *	Features:
 *	- Touching near a ball will pull it to the mouse or touch location. Spring force will hold it in place when dragged around.
@@ -40,7 +39,7 @@
 *	- Added scaling for gravity and touch velocity across devices (displays) - 8/26/17
 *	- Turned off tilt mode when device is switched to landscape and provide notification to lock portrait mode - 8/26/17
 *	- Cleaned up formatting for GitHub - 9/1/17
-*   - 7/20/25 Updates:
+*   - 7/23/25 Updates:
 *     Added permission check to us gyro on iOS devices -7/20/25
 *     Added inverse funnel
 *     Updated to stop simulation in landscape mode for mobile devices 
@@ -51,25 +50,6 @@
 *	- Add raytracing :-) (i.e. Use three.js)
 *	- Add a GUI usable on a phone device. Currently using a check box to turn the gravity tilt mode on and off is hard to see on a phone.
 *
-*   - Add iOS check
-	function isiOS() {
-		return /iPad|iPhone|iPod/.test(navigator.userAgent);
-	}
-
-	function isAndroid() {
-		return /android/i.test(navigator.userAgent);
-	}
-
-	canvas.width = window.innerWidth;
-
-	if (isiOS() || isAndroid()) {
-	// Subtract bottom UI bar height only on mobile
-	canvas.height = window.innerHeight - bottomBorderHeight;
-		} else {
-	// Full height on desktop
-	canvas.height = window.innerHeight;
-	}
-*/
 
 // Force restrictive declarations
 "use strict"; 
@@ -80,13 +60,6 @@
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d'); 
 var fpsCounter = document.getElementById('fpscounter');
-
-
-/*
-// Tilt checkbox lower right corner for now...
-var tiltCheckbox = document.getElementById('tiltcheck');  
-	tiltCheckbox.checked = false;	
-*/
 
 let simulationPaused = false; // Pause if in Landscape on mobile device
 
@@ -123,9 +96,6 @@ var touch_Release = false;
 /*
 * Misc Variables
 */
-
-// Temporary for using FPS text field for testing
-var troubleshooting = 0;
 
 // To address jitter when draging a ball along an angled wall
 var increasedamping = 1;
@@ -182,20 +152,6 @@ function isLandscape() {
 
 function getOrientation(){
 	var orientation = window.innerWidth > window.innerHeight ? "Landscape" : "Portrait";
-/*
-	// Turn off tilt mode if device is in Landscape mode
-	if (orientation == "Landscape"){
-//		tiltCheckbox.checked = false;
-		tiltEnabled = false;
-		orientchk = false;
-		simulationPaused = true;
-	}else {
-//		tiltCheckbox.checked = true;
-		orientchk = true;
-		simulationPaused = false;
-	}
-*/
-
     const wasPaused = simulationPaused;
     const inLandscape = isLandscape();
 
@@ -209,6 +165,8 @@ function getOrientation(){
     }
 
 }
+
+// iOS requires user permission to turn on Gyro accelerometer
 
 async function requestOrientationPermission() {
 	// Only needed on iOS 13+ where permission is required
@@ -994,22 +952,16 @@ var Simulation = function(context){
 	*/
 
 	function end(fps, panic) {
-		if (isMobileDevice() && isLandscape()){
-				
-			fpsCounter.textContent = "Paused - Rotate to Portrait";
-			return;
 		
-		/*
-			var notifytxt = ", Rotate To Portrait"
-			} else {
-			notifytxt = " ";
-		*/
+		// Notify if simulation is paused in Landscape mode or display Mainloop FPS Counter
 		
-		}
+		const inLandscape = isMobileDevice() && isLandscape();
 
-		// Mainloop FPS counter text
-		fpsCounter.textContent = parseInt(fps, 10) + ' FPS' + notifytxt; 
-//		fpsCounter.textContent = parseInt(troubleshooting, 10) + ' Troubleshooting'; // Use FPS text to temporarily display "test" value
+		if (inLandscape) {
+			fpsCounter.textContent = "Paused - Rotate to Portrait";
+			} else {
+				fpsCounter.textContent = parseInt(fps, 10) + ' FPS';
+			}
 
 		if (panic) {
 		// This pattern introduces non-deterministic behavior, but in this case
