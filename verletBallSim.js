@@ -153,9 +153,16 @@ window.onload = init;
 // Resize canvas if tablet or phone is rotated
 window.onresize = function(){
 
+/*
 	// Reload web page since boundary conditions have changed
 	// Todo: freeze application until device is rotated back to portrait mode
 	window.location.reload(false); //true reloads all resources
+*/
+    getOrientation();
+    // Optionally adjust canvas size here if needed
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
 
 };
 
@@ -988,10 +995,16 @@ var Simulation = function(context){
 
 	function end(fps, panic) {
 		if (isMobileDevice() && isLandscape()){
+				
+			fpsCounter.textContent = "Paused - Rotate to Portrait";
+			return;
 		
+		/*
 			var notifytxt = ", Rotate To Portrait"
 			} else {
 			notifytxt = " ";
+		*/
+		
 		}
 
 		// Mainloop FPS counter text
