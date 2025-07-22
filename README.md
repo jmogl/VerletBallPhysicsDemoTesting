@@ -1,6 +1,6 @@
 # Verlet Ball Physics Demo  (TESTING ONLY)
 
-JavaScript Ball Physics 2D Simulation using Verlet Integration. Project goal is to learn JavaScript along with physics collision simulaton. This demo is a work in progress and not intended to be a robust application for every device / Web browser. Tested on iPhone & iPad (Chrome and Safari), Android Nexus 6P, Windows 10, Mac OSX.
+JavaScript Ball Physics 2D Simulation using Verlet Integration. Project goal is to learn JavaScript along with physics collision simulaton. This demo is a work in progress and not intended to be a robust application for every device / Web browser, but should work on most devices. Please submit an Issue if it is not working and include info on the device and browser version.
 
 By Jeff Miller. Released under MIT License. Last Update: 9/1/17
 
