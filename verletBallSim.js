@@ -141,8 +141,13 @@ window.onresize = function(){
 
 // Check if on Mobile device for portrait / landscape
 function isMobileDevice() {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  }
+//    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	return (
+		typeof window.orientation !== "undefined" || 
+		navigator.userAgent.includes("IEMobile") ||
+		(navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
+	);
+ }
 
 function isPortrait() {
   return window.matchMedia("(orientation: portrait)").matches;
