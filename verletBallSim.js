@@ -144,26 +144,31 @@ window.onresize = function(){
 
 };
 
-
 /*
  * Detects the user's operating system and sets the global OS flags.
  * Should be called once when the simulation initializes.
  */
 function detectOperatingSystem() {
 	const ua = navigator.userAgent;
+	const hasTouch = "ontouchend" in document;
 
 	// Check for iPad first, as it's the most specific iOS case.
 	// The second condition is for modern iPadOS which can pretend to be a Mac.
-	if (ua.includes("iPad") || (ua.includes("Macintosh") && "ontouchend" in document)) {
+	if (ua.includes("iPad") || (ua.includes("Macintosh") && hasTouch)) {
 		OS_iPAD = true;
 	//	OS_iOS = true; // An iPad is also an iOS device.
 	}
-	// Check for other iOS devices like iPhone
+	// Check for other iOS devices like iPhone or iPod.
 	else if (/iPhone|iPod/.test(ua)) {
 		OS_iOS = true;
 	}
-	// Check for Android.
+	// Check for the "Android" keyword in the User Agent.
 	else if (/Android/i.test(ua)) {
+		OS_Android = true;
+	}
+	// Fallback for other mobile devices (like a Pixel in desktop mode).
+	// If it has a touch screen and wasn't identified as iOS, treat it as Android.
+	else if (hasTouch) {
 		OS_Android = true;
 	}
 }
