@@ -402,8 +402,11 @@ function handleMotionEvent(event) {
 	if (OS_iPAD) {
 		// Y-axis sensor data (ay) controls the screen's X-axis.
 		// X-axis sensor data (ax) controls the screen's Y-axis.
-		finalX = ay;
-		finalY = ax;
+	//finalX = ay;
+	//finalY = ax;
+	finalX = ax;
+	finalY = ay;
+		
 	}
 	// Google Pixel Tablet (Android): Both axes are reversed.
 	else if (OS_Android) {
