@@ -27,7 +27,7 @@ By Jeff Miller. Released under MIT License.
 - style.css: Cascading style sheet for web page formatting
 
 **To Do:**
-- May add an option to dynamically change the interior wall obstructions, but need to fix an issue where the ball sticks if the wall is shallow.
+- May add an option to dynamically change the interior wall obstructions, but need to fix an issue where the ball sticks if the wall is shallow or slow velocity.
 - Every once in a while, the collision detection adds energy and balls explode due to a singularity probably from the wall edge collision detection.  
 - Replace the Enable Tilt button with a proper pop up UI menu
 - Switch from Canvas to webgl using three.js
