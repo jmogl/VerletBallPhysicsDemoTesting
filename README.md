@@ -5,12 +5,12 @@ JavaScript Ball Physics 2D Simulation using Verlet Integration. Project goal is 
 By Jeff Miller. Released under MIT License. 
 
 **Features:**
-- Touching near a ball will pull it to the mouse or touch location. Spring force will hold it in place when dragged, but the ball can get dropped.
+- Touching near a ball will pull it to the mouse or touch location. Spring force will hold it in place when dragged.
 - General sloped wall collision detection
 - Stable stacked balls
-- Balls move based on gravity vector when tilted on a mobile device. If mobile device is in landscape, tilt mode is turned off and user is prompted to rotate to Portrait with Orientation lock turned on. A small check box at the lower right can toggle on and off, which works best on a tablet for now due to font size.
-- Updated code to pause simulation in Landscape mode. Javasript can not force portrait mode lock on some devices like (i.e. iOS).
-
+- Balls move based on gravity vector when tilted on a mobile device after pressing the "Enable Tilt" button is pressed. If mobile device is in landscape, the simulation is paused and user is prompted to rotate to Portrait. Recommend turning orientation lock on in portrait mode. On iOS devices, you will be prompted for permission to use the gyro. 
+- Desktop users without an accelerometer have the option to turn "Gravity" on and off which creates some interesting effects
+  
 [Click here to run the Demo!](https://jmogl.github.io/VerletBallPhysicsDemoTesting/)	
 
 **References:**
@@ -29,5 +29,5 @@ By Jeff Miller. Released under MIT License.
 **To Do:**
 - May add an option to dynamically change the interior wall obstructions, but need to fix an issue where the ball sticks if the wall is shallow.
 - Every once in a while, the collision detection adds energy and balls explode due to a singularity probably from the wall edge collision detection.  
-- Replace the Enable Tilt button with a proper pop up menu
-- Switch from Canvas to webgl using three.js. 
+- Replace the Enable Tilt button with a proper pop up UI menu
+- Switch from Canvas to webgl using three.js
