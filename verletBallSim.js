@@ -44,7 +44,8 @@
 *     		Added inverse funnel
 *     		Updated to stop simulation in landscape mode for mobile devices 
 *     		Added a button to turn on Tilt mode (Gyro) on / off
-*			Added "0G" toggle for desktop 
+*		Added "0G" toggle for desktop 
+*		Updated OS Check for iOS & Android (Google Pixel 11). Other devices may not work properly in "Tilt" mode
 *			
 *	
 *	To Do:
@@ -182,48 +183,6 @@ function isMobileDevice() {
 	return OS_iOS || OS_iPAD || OS_Android;
 }
 
-
-/*
-
-// Check if on Mobile device for portrait / landscape
-function isMobileDevice() {
-//    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-	return (
-		typeof window.orientation !== "undefined" || 
-		navigator.userAgent.includes("IEMobile") ||
-		navigator.userAgent.includes("Android") ||		
-		(navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
-
-
-
-	);
- }
- 
- function isIPad() {
-  return (
-    navigator.userAgent.includes("iPad") || // traditional iPads
-    (navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
-  );
-}
-
- function isAndroid() {
-  return (
-    navigator.userAgent.includes("iPad") || // traditional iPads
-    (navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
-  );
-}
-
-*/
-
-/*
-	// Check to see if OS is Android since gyro x/y axis are flipped
-	var ua = navigator.userAgent.toLowerCase();
-	if (ua.indexOf("android") > -1) {
-		OS_Android = true;
-	}
-
-*/
-
 function isPortrait() {
   return window.matchMedia("(orientation: portrait)").matches;
 }
@@ -355,38 +314,6 @@ function init() {
 
 };
 
-
-/*
-// Motion Event Handler - Get gravity vector from accel / gyro
-function handleMotionEvent(event) {	
-	var axisflip = 1;
-
-	if (OS_Android == true){
-		axisflip = -1;
-	}
-
-	var ax = event.accelerationIncludingGravity.x * axisflip;
-	var ay = event.accelerationIncludingGravity.y * -1 * axisflip;
-	var az = event.accelerationIncludingGravity.z;
-
-	// check to see if accelerationIncludingGravity is not supported
-	var accelcheck = ax + ay + az;
-
-	if (accelcheck == 0) {
-		tiltsupport = false;
-	}
-
-	if (tiltsupport == false || tiltEnabled == false){ 
-		gravityVec.x = 0;
-		gravityVec.y = 9.8 * gravity_scale * sim_scale;
-
-	} else {		
-		gravityVec.x = ax * gravity_scale*sim_scale;
-		gravityVec.y = ay * gravity_scale*sim_scale;
-	}
-}
-*/
-
 // Final motion handler using global OS flags for device-specific corrections
 function handleMotionEvent(event) {
 	// Raw accelerometer data
@@ -437,10 +364,6 @@ function handleMotionEvent(event) {
 		gravityVec.y = -finalY * gravity_scale * sim_scale;
 	}
 }
-
-
-
-
 	
 // Listen to Hammer Touch events... On Touch
 mc.on("panleft panright panup pandown press", function(ev) {
@@ -1111,7 +1034,7 @@ var Simulation = function(context){
 		const inLandscape = isMobileDevice() && isLandscape();
 
 		if (inLandscape) {
-			fpsCounter.textContent = "Paused - Rotate to Portrait";
+			fpsCounter.textContent = "Paused - Rotate to or lock in Portrait";
 			} else {
 				fpsCounter.textContent = parseInt(fps, 10) + ' FPS';
 			}
