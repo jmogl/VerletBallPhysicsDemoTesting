@@ -290,6 +290,8 @@ function init() {
 	}
 };
 
+
+/*
 // Motion Event Handler - Get gravity vector from accel / gyro
 function handleMotionEvent(event) {	
 	var axisflip = 1;
@@ -318,6 +320,69 @@ function handleMotionEvent(event) {
 		gravityVec.y = ay * gravity_scale*sim_scale;
 	}
 }
+*/
+
+// A more robust motion handler that accounts for screen rotation 
+function handleMotionEvent(event) {
+    // Raw accelerometer data
+    let ax = event.accelerationIncludingGravity.x;
+    let ay = event.accelerationIncludingGravity.y;
+    let az = event.accelerationIncludingGravity.z; // Often unused in 2D sims but good to have
+
+    // Check for bad data
+    if (ax === null || ay === null) {
+        tiltsupport = false;
+        return;
+    }
+
+    // This is the crucial part: Get the current screen rotation
+    // screen.orientation.angle is modern; window.orientation is for older devices.
+    const angle = window.screen.orientation.angle || window.orientation || 0;
+
+    let finalX, finalY;
+
+    // Remap the raw axes to the screen's coordinate system
+    switch (angle) {
+        case 0: // Portrait
+            finalX = ax;
+            finalY = ay;
+            break;
+        case 90: // Landscape (rotated left)
+            finalX = -ay;
+            finalY = ax;
+            break;
+        case -90: // Landscape (rotated right)
+        case 270:
+            finalX = ay;
+            finalY = -ax;
+            break;
+        case 180: // Upside-down portrait
+            finalX = -ax;
+            finalY = -ay;
+            break;
+        default:
+            finalX = ax;
+            finalY = ay;
+    }
+
+    // Now use 'finalX' and 'finalY' for your gravity vector.
+    // The OS_Android check is no longer needed here.
+
+    if (tiltsupport == false || tiltEnabled == false) {
+        gravityVec.x = 0;
+        gravityVec.y = 9.8 * gravity_scale * sim_scale; // Use the scaled value from your code
+    } else {
+        // Apply the correctly mapped values to your simulation's gravity
+        gravityVec.x = finalX * gravity_scale * sim_scale;
+        gravityVec.y = finalY * gravity_scale * sim_scale; 
+		// Todo: Get rid of gravity_scale and only use sim_scale?
+    }
+
+}
+
+
+
+
 	
 // Listen to Hammer Touch events... On Touch
 mc.on("panleft panright panup pandown press", function(ev) {
@@ -947,7 +1012,7 @@ var Simulation = function(context){
 		}
 */
 
-
+		// Pause Simulation in Landscape mode on mobile devices
 		if (isMobileDevice() && isLandscape()) {
 			return; // Skip simulation steps
 		}
