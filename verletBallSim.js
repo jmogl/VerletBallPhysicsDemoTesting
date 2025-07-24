@@ -345,7 +345,9 @@ function handleMotionEvent(event) {
     switch (angle) {
         case 0: // Portrait
             finalX = ax;
-            finalY = ay;
+            // This is the fix: Invert the Y-axis for devices like yours
+            // where it's reversed in portrait mode.
+            finalY = -ay;
             break;
         case 90: // Landscape (rotated left)
             finalX = -ay;
@@ -358,11 +360,11 @@ function handleMotionEvent(event) {
             break;
         case 180: // Upside-down portrait
             finalX = -ax;
-            finalY = -ay;
+            finalY = ay; // Also invert the Y-axis here for consistency
             break;
         default:
             finalX = ax;
-            finalY = ay;
+            finalY = -ay; // Default to the portrait fix
     }
 
     // Now use 'finalX' and 'finalY' for your gravity vector.
