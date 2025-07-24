@@ -108,9 +108,14 @@ var increasedamping = 1;
 //var gravityVec = new Vector2D(0,0); 
 var gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
 
-
 // Check for Android, since x/y coordinates are flipped for gyro gravity vector
 var OS_Android = false;
+
+// Check for iPAD 
+var OS_iPAD = false;
+
+// Check for iOS
+var OS_iOS = false;
 
 // Track device orientation based on window dimensions
 var orientchk = true;
@@ -129,7 +134,7 @@ window.onresize = function(){
 
 /*
 	// Reload web page since boundary conditions have changed
-	// Todo: freeze application until device is rotated back to portrait mode
+	// Freeze simulation until device is rotated back to portrait mode
 	window.location.reload(false); //true reloads all resources
 */
     getOrientation();
@@ -140,13 +145,52 @@ window.onresize = function(){
 };
 
 
+/*
+ * Detects the user's operating system and sets the global OS flags.
+ * Should be called once when the simulation initializes.
+ */
+function detectOperatingSystem() {
+	const ua = navigator.userAgent;
+
+	// Check for iPad first, as it's the most specific iOS case.
+	// The second condition is for modern iPadOS which can pretend to be a Mac.
+	if (ua.includes("iPad") || (ua.includes("Macintosh") && "ontouchend" in document)) {
+		OS_iPAD = true;
+	//	OS_iOS = true; // An iPad is also an iOS device.
+	}
+	// Check for other iOS devices like iPhone
+	else if (/iPhone|iPod/.test(ua)) {
+		OS_iOS = true;
+	}
+	// Check for Android.
+	else if (/Android/i.test(ua)) {
+		OS_Android = true;
+	}
+}
+
+/**
+ * Checks if the device is a mobile device based on the OS flags.
+ * This function now relies on detectOperatingSystem() having been run.
+ * @returns {boolean} True if the device is detected as iOS or Android.
+ */
+function isMobileDevice() {
+	return OS_iOS || OS_iPAD || OS_Android;
+}
+
+
+/*
+
 // Check if on Mobile device for portrait / landscape
 function isMobileDevice() {
 //    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 	return (
 		typeof window.orientation !== "undefined" || 
 		navigator.userAgent.includes("IEMobile") ||
+		navigator.userAgent.includes("Android") ||		
 		(navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
+
+
+
 	);
  }
  
@@ -156,6 +200,24 @@ function isMobileDevice() {
     (navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
   );
 }
+
+ function isAndroid() {
+  return (
+    navigator.userAgent.includes("iPad") || // traditional iPads
+    (navigator.userAgent.includes("Macintosh") && 'ontouchend' in document) // iPadOS masquerading as Mac
+  );
+}
+
+*/
+
+/*
+	// Check to see if OS is Android since gyro x/y axis are flipped
+	var ua = navigator.userAgent.toLowerCase();
+	if (ua.indexOf("android") > -1) {
+		OS_Android = true;
+	}
+
+*/
 
 function isPortrait() {
   return window.matchMedia("(orientation: portrait)").matches;
@@ -215,6 +277,8 @@ async function requestOrientationPermission() {
 function init() {
 	// Clear console for debugging
 	console.clear();
+
+	detectOperatingSystem(); // Detect OS
 
 	// Set canvas width just short of full screen to eliminate scroll bars
 	canvas.width = window.innerWidth;
@@ -283,11 +347,7 @@ function init() {
 		}
 	});
 
-	// Check to see if OS is Android since gyro x/y axis are flipped
-	var ua = navigator.userAgent.toLowerCase();
-	if (ua.indexOf("android") > -1) {
-		OS_Android = true;
-	}
+
 };
 
 
@@ -322,64 +382,52 @@ function handleMotionEvent(event) {
 }
 */
 
-// A more robust motion handler that accounts for screen rotation 
+// Final motion handler using global OS flags for device-specific corrections
 function handleMotionEvent(event) {
-    // Raw accelerometer data
-    let ax = event.accelerationIncludingGravity.x;
-    let ay = event.accelerationIncludingGravity.y;
-    let az = event.accelerationIncludingGravity.z; // Often unused in 2D sims but good to have
+	// Raw accelerometer data
+	let ax = event.accelerationIncludingGravity.x;
+	let ay = event.accelerationIncludingGravity.y;
 
-    // Check for bad data
-    if (ax === null || ay === null) {
-        tiltsupport = false;
-        return;
-    }
+	// Exit if data is not available
+	if (ax === null || ay === null) {
+		tiltsupport = false;
+		return;
+	}
 
-    // This is the crucial part: Get the current screen rotation
-    // screen.orientation.angle is modern; window.orientation is for older devices.
-    const angle = window.screen.orientation.angle || window.orientation || 0;
+	let finalX, finalY;
 
-    let finalX, finalY;
+	// --- Device-Specific Logic ---
 
-    // Remap the raw axes to the screen's coordinate system
-    switch (angle) {
-        case 0: // Portrait
-            finalX = ax;
-            // This is the fix: Invert the Y-axis for devices like yours
-            // where it's reversed in portrait mode.
-            finalY = -ay;
-            break;
-        case 90: // Landscape (rotated left)
-            finalX = -ay;
-            finalY = ax;
-            break;
-        case -90: // Landscape (rotated right)
-        case 270:
-            finalX = ay;
-            finalY = -ax;
-            break;
-        case 180: // Upside-down portrait
-            finalX = -ax;
-            finalY = ay; // Also invert the Y-axis here for consistency
-            break;
-        default:
-            finalX = ax;
-            finalY = -ay; // Default to the portrait fix
-    }
+	// iPad Pro: Axes are swapped 90 degrees.
+	if (OS_iPAD) {
+		// Y-axis sensor data (ay) controls the screen's X-axis.
+		// X-axis sensor data (ax) controls the screen's Y-axis.
+		finalX = ay;
+		finalY = ax;
+	}
+	// Google Pixel Tablet (Android): Both axes are reversed.
+	else if (OS_Android) {
+		// X-axis is reversed.
+		// Y-axis is reversed.
+		finalX = -ax;
+		finalY = -ay;
+	}
+	// Default for other devices (e.g., iPhone)
+	else {
+		finalX = ax;
+		finalY = ay;
+	}
 
-    // Now use 'finalX' and 'finalY' for your gravity vector.
-    // The OS_Android check is no longer needed here.
-
-    if (tiltsupport == false || tiltEnabled == false) {
-        gravityVec.x = 0;
-        gravityVec.y = 9.8 * gravity_scale * sim_scale; // Use the scaled value from your code
-    } else {
-        // Apply the correctly mapped values to your simulation's gravity
-        gravityVec.x = finalX * gravity_scale * sim_scale;
-        gravityVec.y = finalY * gravity_scale * sim_scale; 
-		// Todo: Get rid of gravity_scale and only use sim_scale?
-    }
-
+	// --- Apply to Simulation ---
+	if (tiltsupport == false || tiltEnabled == false) {
+		gravityVec.x = 0;
+		gravityVec.y = 9.8 * gravity_scale;
+	} else {
+		// The simulation's Y-axis is inverted relative to the sensor standard.
+		// We apply that inversion here to the final Y value for all devices.
+		gravityVec.x = finalX * gravity_scale * sim_scale;
+		gravityVec.y = -finalY * gravity_scale * sim_scale;
+	}
 }
 
 
