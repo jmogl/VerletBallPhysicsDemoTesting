@@ -39,11 +39,13 @@
 *	- Added scaling for gravity and touch velocity across devices (displays) - 8/26/17
 *	- Turned off tilt mode when device is switched to landscape and provide notification to lock portrait mode - 8/26/17
 *	- Cleaned up formatting for GitHub - 9/1/17
-*   	- 7/23/25 Updates:
+*   	- 7/22/25 Updates:
 *     		Added permission check to us gyro on iOS devices -7/20/25
 *     		Added inverse funnel
 *     		Updated to stop simulation in landscape mode for mobile devices 
 *     		Added a button to turn on Tilt mode (Gyro) on / off
+*			Added "0G" toggle for desktop 
+*			
 *	
 *	To Do:
 *
@@ -210,66 +212,80 @@ async function requestOrientationPermission() {
 
 
 // initialize the simulation
-function init() { 
-
+function init() {
 	// Clear console for debugging
 	console.clear();
 
-	// Set canvas width just short of full screen to eliminate scroll bars	
+	// Set canvas width just short of full screen to eliminate scroll bars
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 
 	// Turn off Tilt mode in landscape (axis flips on iOS)
 	getOrientation();
-	
+
 	// Scale to standard height of sim is 1200
 	sim_scale = canvas.height / 1200;
 
 	// Set the Hammer pan gesture to support all directions.
-	// this will block the vertical scrolling on a touch-device while on the element
 	mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-		
+
 	var simulation = new Simulation(context);
+	const enableBtn = document.getElementById("enableTiltButton");
 
-	// Setup accelerometer support for mobile devices
-	if (window.DeviceMotionEvent==undefined) {		
-		
-		console.log("No Gyro");
-//		console.log(window.DeviceMotionEvent);
-		
-		// Set default gravity to bottom of device: Y-axis
-		gravityVec = new Vector2D(0.0,9.8 * gravity_scale);
-		tiltsupport = false;
-		}
-		else {
-			console.log("Mobile Device");
+	// Reliably check if it's a mobile device using the function already in your file.
+	const mobileDevice = isMobileDevice();
 
-	
-		// Ask to use gyro via requestOrientationPermission() for iOS 
-			tiltsupport = false;
-			const enableBtn = document.getElementById("enableTiltButton");
-			enableBtn.addEventListener("click", () => {
-  			if (!tiltEnabled) {
-    				requestOrientationPermission().then(() => {
-      				tiltEnabled = true;
-      				tiltsupport = true;
-      				enableBtn.textContent = "Disable Tilt";
-      				console.log("Tilt enabled");
+	// Set the initial button text correctly for desktop users.
+	if (!mobileDevice) {
+		enableBtn.textContent = "Toggle Gravity Off";
+	}
+
+	// This is now the one and only click handler, with clean, separate logic paths.
+	enableBtn.addEventListener("click", () => {
+		// --- PATH 1: Logic for Mobile Devices ---
+		if (mobileDevice) {
+			// If tilt is currently off, try to turn it on.
+			if (!tiltEnabled) {
+				requestOrientationPermission().then(() => {
+					// The 'tiltsupport' flag is set inside the requestOrientationPermission function.
+					if (tiltsupport) {
+						tiltEnabled = true;
+						enableBtn.textContent = "Disable Tilt";
+						console.log("Tilt enabled");
+					}
 				});
-  			} else {
-    				tiltEnabled = false;
-    				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
-    				enableBtn.textContent = "Enable Tilt";
-    				console.log("Tilt disabled");
-				}
-			});
-			
- 	}
+			}
+			// If tilt is currently on, turn it off.
+			else {
+				tiltEnabled = false;
+				tiltsupport = false; // Resetting this is good practice
+				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+				enableBtn.textContent = "Enable Tilt";
+				console.log("Tilt disabled");
+			}
+		}
+		// --- PATH 2: Logic for Desktops ---
+		else {
+			// If gravity is ON (represented by tiltEnabled = false), turn it OFF.
+			if (!tiltEnabled) {
+				tiltEnabled = true; // Use this global flag to track the gravity state.
+				gravityVec = new Vector2D(0.0, 0.0);
+				enableBtn.textContent = "Toggle Gravity On";
+				console.log("Gravity disabled");
+			}
+			// If gravity is OFF (represented by tiltEnabled = true), turn it ON.
+			else {
+				tiltEnabled = false;
+				gravityVec = new Vector2D(0.0, 9.8 * gravity_scale);
+				enableBtn.textContent = "Toggle Gravity Off";
+				console.log("Gravity enabled");
+			}
+		}
+	});
 
-	// Check to see if OS is Android since gyro x/y axis are flipped (From Stack Overflow)
+	// Check to see if OS is Android since gyro x/y axis are flipped
 	var ua = navigator.userAgent.toLowerCase();
-	var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-	if(isAndroid) {
+	if (ua.indexOf("android") > -1) {
 		OS_Android = true;
 	}
 };
