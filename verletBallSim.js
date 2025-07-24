@@ -1,5 +1,5 @@
 /*
-*	Ball Physics Simulation Javascript Demo - Version 2.1 7/23/25
+*	Ball Physics Simulation Javascript Demo - Version 2.11 7/23/25
 *       
 *	Copyright: 2017+  Jeff Miller
 *	License: MIT
