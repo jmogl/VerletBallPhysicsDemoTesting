@@ -191,7 +191,7 @@ function handleMotionEvent(event) {
         finalY = ay * tilt_scale / 10;
     } else {
         // Fallback for other potential touch devices
-        finalX = -ax * tilt_scale;
+        finalX = ax * tilt_scale;
         finalY = -ay * tilt_scale;
     }
     gravityVec.x = finalX;
