@@ -187,8 +187,8 @@ function handleMotionEvent(event) {
         finalX = ay * tilt_scale;
         finalY = ax * tilt_scale;
     } else if (OS_Android) {
-        finalX = -ax * tilt_scale;
-        finalY = -ay * tilt_scale;
+        finalX = -ax * tilt_scale / 10;
+        finalY = ay * tilt_scale / 10;
     } else {
         // Fallback for other potential touch devices
         finalX = -ax * tilt_scale;
