@@ -1,19 +1,62 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Ball Physics Demo TEST</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>Ball Physics Demo - Three.js Version</title>
+    <style>
+        /* Basic CSS for a full-screen experience */
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+            background-color: #000; /* Fallback background */
+            font-family: sans-serif;
+        }
+
+        /* Let the Three.js canvas fill the screen */
+        canvas {
+            display: block;
+        }
+
+        /* Styling for the UI elements */
+        .ui-element {
+            position: absolute;
+            left: 10px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 8px 12px;
+            border-radius: 5px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #fpscounter {
+            top: 10px;
+        }
+        
+        #enableTiltButton {
+            top: 50px;
+            cursor: pointer;
+            border: 1px solid #fff;
+            user-select: none; /* Prevent text selection on click */
+        }
+        
+        #tilttext {
+            top: 95px;
+            background: none;
+            padding-left: 0;
+        }
+    </style>
 </head>
 
 <body>
-	<canvas id="canvas"></canvas>
-	<div id="tilttext">Test Version:2.11</div>
-	<button id="enableTiltButton">  Enable Tilt </button>
-	<div id="fpscounter">0 FPS</div>
-	<script type="text/javascript" src= "./lib/mainloop.min.js"></script>
-	<script type="text/javascript" src= "./lib/hammer.min.js"></script>
-	<script type="text/javascript" src="./lib/vector2D.js"></script>
-        <script type="text/javascript" src="verletBallSim.js"></script>
+    <div id="fpscounter" class="ui-element">0 FPS</div>
+    <button id="enableTiltButton" class="ui-element">Enable Tilt</button>
+    <div id="tilttext" class="ui-element">Version: 3.0-three</div>
+
+    <script src="./lib/mainloop.min.js"></script>
+    <script src="./lib/hammer.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script src="verletBallSim_three.js"></script>
 </body>
 </html>
