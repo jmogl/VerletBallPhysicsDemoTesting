@@ -194,8 +194,8 @@ function handleMotionEvent(event) {
         finalX = ax * tilt_scale;
         finalY = ay * tilt_scale;
     }
-    gravityVec.x = finalX;
-    gravityVec.y = finalY;
+    gravityVec.x = finalX * (GRAVITY_X / 9.8);
+    gravityVec.y = finalY * (GRAVITY_Y / 9.8);
 }
 
 //================================//
