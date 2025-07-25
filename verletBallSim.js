@@ -184,8 +184,8 @@ function handleMotionEvent(event) {
     const tilt_scale = 10000; // 10k on iphone
     let finalX, finalY;
     if (OS_iPAD || OS_iOS) { // Grouping iPhone and iPad
-        finalX = ay * tilt_scale;
-        finalY = ax * tilt_scale;
+        finalX = ax * tilt_scale;
+        finalY = -ay * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale / 10;
         finalY = ay * tilt_scale / 10;
