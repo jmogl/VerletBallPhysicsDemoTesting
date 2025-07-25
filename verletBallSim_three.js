@@ -183,7 +183,7 @@ function init() {
 
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(
-        './textures/laminate_floor_02_diff_4k.jpg',
+        'textures/laminate_floor_02_diff_4k.jpg',
         function(texture) {
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
