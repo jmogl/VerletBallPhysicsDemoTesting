@@ -1,15 +1,10 @@
 /*
-*	Ball Physics Simulation Javascript (Three.js Version) - Version 9.6 (Final) 7/24/25
+*	Ball Physics Simulation Javascript (Three.js Version) - Version 3.01 Work In Progress  7/24/25
 *
 *	Original Copyright: 2017+ Jeff Miller
 *	Three.js Conversion & Correction: 2025
 *	License: MIT
 *
-*	Description:
-*	This version provides a definitive fix for the "stuck ball" bug by
-*	implementing a more robust border collision system that properly
-*	reflects the ball's velocity and prevents it from getting trapped. It also
-* includes a robust fix for the initial spawn position calculation.
 *
 *	Dependencies:
 *	- three.min.js      - WebGL 3D Library
@@ -188,18 +183,19 @@ function handleMotionEvent(event) {
     if (ax === null || ay === null) return;
     const tilt_scale = 10;
     let finalX, finalY;
-    if (OS_iPAD) {
+    if (OS_iPAD || OS_iOS) { // Grouping iPhone and iPad
         finalX = ay * tilt_scale;
-        finalY = -ax * tilt_scale;
+        finalY = ax * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale;
-        finalY = ay * tilt_scale;
-    } else {
-        finalX = ax * tilt_scale;
         finalY = -ay * tilt_scale;
+    } else {
+        // Fallback for other potential touch devices
+        finalX = ax * tilt_scale;
+        finalY = ay * tilt_scale;
     }
     gravityVec.x = finalX;
-    gravityVec.y = finalY * (GRAVITY_Y / 9.8);
+    gravityVec.y = finalY;
 }
 
 //================================//
