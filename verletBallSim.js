@@ -181,11 +181,11 @@ function handleMotionEvent(event) {
     let ax = event.accelerationIncludingGravity.x;
     let ay = event.accelerationIncludingGravity.y;
     if (ax === null || ay === null) return;
-    const tilt_scale = 10000;
+    const tilt_scale = 10000; // 10k on iphone
     let finalX, finalY;
     if (OS_iPAD || OS_iOS) { // Grouping iPhone and iPad
-        finalX = ay * tilt_scale;
-        finalY = ax * tilt_scale;
+        finalX = ax * tilt_scale;
+        finalY = ay * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale;
         finalY = -ay * tilt_scale;
