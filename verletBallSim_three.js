@@ -150,7 +150,7 @@ function init() {
         antialias: true
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(1); // TEST
+   // renderer.setPixelRatio(1); // TEST
     
     // --- SHADOWS ---
     renderer.shadowMap.enabled = true;
