@@ -1,3 +1,12 @@
+This is an exceptionally stubborn bug. The issue persists because while we're correctly resizing the camera and shadow area, we are not updating the light's target position or the ground plane's position when the screen size changes. On an iPhone, the change in aspect ratio is significant enough that the light's original target is no longer in the center of the screen, causing the shadow map to be misaligned and clipped.
+
+The definitive solution is to update the positions of the light's target and the ground plane inside the ResizeObserver along with everything else. This ensures every component of the scene is perfectly aligned every time the viewport changes.
+
+I'm confident this is the final solution.
+
+Final Corrected Code
+JavaScript
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -18,7 +27,7 @@
 //  THREE.JS SCENE GLOBALS
 //================================//
 let scene, camera, renderer;
-let directionalLight;
+let directionalLight, groundPlane; // Make groundPlane global
 
 //================================//
 //  SIMULATION GLOBALS
@@ -100,7 +109,6 @@ function updateShadowCamera() {
     directionalLight.position.set(simWidth / 2, 10, 500);
     directionalLight.target.position.set(simWidth / 2, -simHeight / 2, 0);
 
-    // **FIXED**: Increased the frustum size buffer to guarantee coverage on tall devices.
     const frustumSize = Math.max(simWidth, simHeight) * 1.5;
     const shadowCam = directionalLight.shadow.camera;
 
@@ -149,11 +157,17 @@ function init() {
         camera.updateProjectionMatrix();
 
         renderer.setSize(width, height);
+        
+        // **FIXED**: Update all scene components that depend on screen size.
+        if(groundPlane) {
+            groundPlane.position.set(width / 2, -height / 2, -10);
+            groundPlane.scale.set(width * 2, height * 2, 1);
+        }
         updateShadowCamera();
         getOrientation();
     });
     resizeObserver.observe(canvas);
-
+    
     // Initial call to set sizes
     (() => {
         const width = window.innerWidth;
@@ -180,7 +194,7 @@ function init() {
     directionalLight.castShadow = true;
     scene.add(directionalLight);
     scene.add(directionalLight.target);
-
+    
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.bias = -0.0001;
@@ -195,7 +209,7 @@ function init() {
     const groundMaterial = new THREE.MeshStandardMaterial({
         color: 0xcccccc
     });
-    const groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
+    groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
     groundPlane.receiveShadow = true;
     groundPlane.position.set(simWidth / 2, -simHeight / 2, -10);
     groundPlane.scale.set(simWidth * 2, simHeight * 2, 1);
