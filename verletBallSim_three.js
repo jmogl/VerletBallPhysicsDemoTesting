@@ -51,7 +51,7 @@ window.onresize = function() {
     const height = window.innerHeight;
 
     simWidth = width;
-    simHeight = height; // Use full height for physics
+    simHeight = height;
 
     camera.left = 0;
     camera.right = width;
@@ -61,6 +61,17 @@ window.onresize = function() {
 
     renderer.setSize(width, height);
     getOrientation();
+
+    // Recalculate shadow camera frustum
+    const shadowPadding = 50;
+    const dirLight = scene.children.find(obj => obj.isDirectionalLight);
+    if (dirLight) {
+        dirLight.shadow.camera.left = -width / 2 - shadowPadding;
+        dirLight.shadow.camera.right = width / 2 + shadowPadding;
+        dirLight.shadow.camera.top = height / 2 + shadowPadding;
+        dirLight.shadow.camera.bottom = -height / 2 - shadowPadding;
+        dirLight.shadow.camera.updateProjectionMatrix();
+    }
 };
 
 // --- OS DETECTION & ORIENTATION ---
