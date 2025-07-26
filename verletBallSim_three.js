@@ -1,5 +1,3 @@
-error
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - 3.0, Beta 2 -7/26/25
 *
