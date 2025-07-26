@@ -1,12 +1,3 @@
-That green color is good news! It means the CameraHelper is updating every frame. The problem is that the helper's dimensions are not being synchronized after you changed the shadow camera's properties.
-
-You need to add one final line of code to manually update the helper's geometry after you update the camera's projection matrix. This will make the green box resize to match the new, larger shadow area you defined.
-
-Here is the complete code with the final line added. Once you run this, the green box will correctly surround your entire scene, and you can then remove the two helper lines to finalize the fix.
-
-Full Corrected Code
-JavaScript
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
