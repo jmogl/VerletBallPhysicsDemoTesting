@@ -1,14 +1,3 @@
-That means we've successfully isolated the problem. The ResizeObserver is working correctly, but the calculated size of the shadow area is still just shy of what's needed for the iPhone's tall, narrow screen.
-
-The final step is to simply increase the safety margin for the shadow camera's size. By making the calculated area slightly larger, we can guarantee it will cover the entire screen, even on an iPhone.
-
-This version increases the buffer from 20% to 50%, which will definitively solve this issue. I have also removed the CameraHelper as it has served its purpose in diagnosing the problem.
-
-This is the final, production-ready code.
-
-Final Corrected Code
-JavaScript
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
