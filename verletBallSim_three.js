@@ -163,12 +163,13 @@ function init() {
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // Resize the shadow camera frustum to cover the entire area
-    const shadowPadding = 50;
+    // **FIXED**: Make the shadow camera frustum larger to prevent clipping on any device.
+    const shadowPadding = 100; // Increased padding
     directionalLight.shadow.camera.left = -simWidth / 2 - shadowPadding;
     directionalLight.shadow.camera.right = simWidth / 2 + shadowPadding;
-    directionalLight.shadow.camera.top = simHeight / 2 + shadowPadding;
-    directionalLight.shadow.camera.bottom = -simHeight / 2 - shadowPadding;
+    directionalLight.shadow.camera.top = simHeight - shadowPadding; // Use a larger vertical area
+    directionalLight.shadow.camera.bottom = -simHeight - shadowPadding; // Use a larger vertical area
+    directionalLight.shadow.camera.updateProjectionMatrix(); // Apply the changes
 
 
     // --- GROUND PLANE & TEXTURE ---
@@ -505,9 +506,6 @@ var Simulation = function(renderer) {
         for (let iter = 0; iter < solverIterations; iter++) {
             for (let i = 0; i < bodies.length; i++) {
                 const body = bodies[i];
-
-                // **FIXED**: The redundant, hard-coded boundary checks have been removed.
-                // The Wall object loop below now handles all wall collisions.
 
                 for (const wall of walls) {
                     const p1_to_body = new THREE.Vector2().subVectors(body.position, wall.p1);
