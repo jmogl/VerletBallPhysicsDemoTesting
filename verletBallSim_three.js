@@ -240,17 +240,17 @@ function handleMotionEvent(event) {
     let ax = event.accelerationIncludingGravity.x;
     let ay = event.accelerationIncludingGravity.y;
     if (ax === null || ay === null) return;
-    const tilt_scale = 10000;
+    const tilt_scale = 100;
     let finalX, finalY;
     if (OS_iPAD || OS_iOS) {
         finalX = ax * tilt_scale;
-        finalY = ay * tilt_scale;
+        finalY = -ay * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale;
         finalY = -ay * tilt_scale;
     } else {
         finalX = ax * tilt_scale;
-        finalY = ay * tilt_scale;
+        finalY = -ay * tilt_scale;
     }
     gravityVec.x = finalX;
     gravityVec.y = finalY;
