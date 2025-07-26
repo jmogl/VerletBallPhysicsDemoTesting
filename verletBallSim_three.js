@@ -1,3 +1,5 @@
+ERROR to verify reload
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -46,25 +48,6 @@ var OS_iOS = false;
 // Initialize function
 window.onload = init;
 
-// **FIXED**: The resize handler now also updates the shadow camera.
-window.onresize = function() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    simWidth = width;
-    simHeight = height;
-
-    camera.left = 0;
-    camera.right = width;
-    camera.top = 0;
-    camera.bottom = -height;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(width, height);
-    updateShadowCamera(); // Update shadows on resize
-    getOrientation();
-};
-
 // --- OS DETECTION & ORIENTATION ---
 function detectOperatingSystem() {
     const ua = navigator.userAgent;
@@ -112,8 +95,14 @@ async function requestOrientationPermission() {
     return false;
 }
 
-// **FIXED**: A dedicated function to update the shadow camera properties.
+// A dedicated function to update the shadow camera properties.
 function updateShadowCamera() {
+    // Return if the light hasn't been initialized yet
+    if (!directionalLight) return;
+
+    directionalLight.position.set(simWidth / 2, 10, 500);
+    directionalLight.target.position.set(simWidth / 2, -simHeight / 2, 0);
+
     const frustumSize = Math.max(simWidth, simHeight) * 1.2;
     const shadowCam = directionalLight.shadow.camera;
 
@@ -158,6 +147,32 @@ function init() {
     });
     renderer.setSize(width, height);
 
+    // --- ROBUST RESIZE HANDLING ---
+    // **FIXED**: Use ResizeObserver for reliable updates, especially on mobile.
+    const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            const {
+                width,
+                height
+            } = entry.contentRect;
+
+            simWidth = width;
+            simHeight = height;
+
+            camera.left = 0;
+            camera.right = width;
+            camera.top = 0;
+            camera.bottom = -height;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(width, height);
+            updateShadowCamera(); // Crucially, update shadows on every resize.
+            getOrientation();
+        }
+    });
+    resizeObserver.observe(canvas);
+
+
     // --- SHADOWS ---
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -166,18 +181,15 @@ function init() {
     scene.add(ambientLight);
     directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 
-    directionalLight.position.set(simWidth / 2, 10, 500);
-    directionalLight.target.position.set(simWidth / 2, -simHeight / 2, 0);
-    scene.add(directionalLight.target);
-
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+    scene.add(directionalLight.target);
     
     // DEBUG: Add a helper to visualize the shadow camera's frustum
     shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
     scene.add(shadowHelper);
 
-    // Configure shadow properties for better quality
+    // Configure shadow properties
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.bias = -0.0001;
@@ -185,17 +197,18 @@ function init() {
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // Call the new function to set the initial shadow properties
+    // Call the function to set the initial shadow properties
     updateShadowCamera();
 
     // --- GROUND PLANE & TEXTURE ---
-    const groundGeometry = new THREE.PlaneGeometry(simWidth * 2, simHeight * 2);
+    const groundGeometry = new THREE.PlaneGeometry(1, 1); // Start with 1x1, will be scaled.
     const groundMaterial = new THREE.MeshStandardMaterial({
         color: 0xcccccc
     });
     const groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
     groundPlane.receiveShadow = true;
     groundPlane.position.set(simWidth / 2, -simHeight / 2, -10);
+    groundPlane.scale.set(simWidth * 2, simHeight * 2, 1); // Scale instead of recreating
     scene.add(groundPlane);
 
     const textureLoader = new THREE.TextureLoader();
