@@ -247,7 +247,7 @@ function handleMotionEvent(event) {
         finalY = -ay * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale;
-        finalY = -ay * tilt_scale;
+        finalY = ay * tilt_scale;
     } else {
         finalX = ax * tilt_scale;
         finalY = -ay * tilt_scale;
