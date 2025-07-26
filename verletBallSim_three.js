@@ -1,3 +1,5 @@
+error
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -95,8 +97,13 @@ async function requestOrientationPermission() {
 
 // A dedicated function to update all screen layout elements.
 function updateLayout() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    // iOS-specific fix for visualViewport clipping issue
+    if (window.visualViewport) {
+        height = window.visualViewport.height;
+    }
 
     simWidth = width;
     simHeight = height;
@@ -123,14 +130,15 @@ function updateLayout() {
         directionalLight.target.position.set(width / 2, -height / 2, 0);
 
         const frustumSize = Math.max(width, height) * 1.5;
+        const margin = 20; // Add small buffer to avoid clipping
         const shadowCam = directionalLight.shadow.camera;
         shadowCam.left = -frustumSize / 2;
         shadowCam.right = frustumSize / 2;
-        shadowCam.top = frustumSize / 2;
-        shadowCam.bottom = -frustumSize / 2;
+        shadowCam.top = frustumSize / 2 + margin;
+        shadowCam.bottom = -frustumSize / 2 - margin;
         shadowCam.updateProjectionMatrix();
     }
-    
+
     getOrientation();
 }
 
