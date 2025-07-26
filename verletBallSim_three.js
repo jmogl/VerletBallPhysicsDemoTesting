@@ -148,11 +148,10 @@ function init() {
     renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         antialias: true
-        precision: "highp" //Force high precision from ChatGPT recommendation
-        renderer.setPixelRatio(1); //Recommended for test
     });
-    renderer.setSize(width, height);
-
+   // renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Add this line
+    
     // --- SHADOWS ---
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
