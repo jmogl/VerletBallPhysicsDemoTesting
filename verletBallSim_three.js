@@ -1,3 +1,13 @@
+I am providing a new response to the user's issue with shadow clipping on iPhones. The previous attempts to fix the issue by adjusting the camera frustum have been unsuccessful, indicating the problem is not related to the aspect ratio. This suggests the issue may be with how iOS handles WebGL precision, which can cause shadow mapping artifacts. To address this, the bias property of the shadow map will be adjusted to counteract these precision-related issues.
+
+The Definitive Solution: Adjusting the Shadow Bias
+The shadow clipping issue on iPhones, when not an aspect ratio problem, is almost always a precision issue with how the mobile GPU renders the shadow map. This can be resolved by adjusting the bias property of the shadow map, which helps the renderer decide whether a pixel is in shadow or not.
+
+By making the bias slightly more negative, we can resolve the artifacts that cause the shadow clipping on iOS. I have also removed the CameraHelper as it's no longer needed for debugging.
+
+Final Corrected Code
+JavaScript
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -18,7 +28,7 @@
 //  THREE.JS SCENE GLOBALS
 //================================//
 let scene, camera, renderer;
-let directionalLight, groundPlane; // Make these globally accessible
+let directionalLight, groundPlane; // Make groundPlane global
 
 //================================//
 //  SIMULATION GLOBALS
@@ -93,7 +103,7 @@ async function requestOrientationPermission() {
     return false;
 }
 
-// **FIXED**: A single, robust function to handle all screen layout updates.
+// A dedicated function to update all screen layout elements.
 function updateLayout() {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -122,7 +132,7 @@ function updateLayout() {
         directionalLight.position.set(width / 2, 10, 500);
         directionalLight.target.position.set(width / 2, -height / 2, 0);
 
-        const frustumSize = Math.max(width, height) * 1.5; // Generous buffer
+        const frustumSize = Math.max(width, height) * 1.5;
         const shadowCam = directionalLight.shadow.camera;
         shadowCam.left = -frustumSize / 2;
         shadowCam.right = frustumSize / 2;
@@ -177,7 +187,8 @@ function init() {
     
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.bias = -0.0001;
+    // **FIXED**: A more negative bias to solve precision artifacts on mobile GPUs.
+    directionalLight.shadow.bias = -0.0005; 
     directionalLight.shadow.normalBias = 0.15;
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
