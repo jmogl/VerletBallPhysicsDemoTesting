@@ -1,13 +1,3 @@
-I am providing a new response to the user's issue with shadow clipping on iPhones. The previous attempts to fix the issue by adjusting the camera frustum have been unsuccessful, indicating the problem is not related to the aspect ratio. This suggests the issue may be with how iOS handles WebGL precision, which can cause shadow mapping artifacts. To address this, the bias property of the shadow map will be adjusted to counteract these precision-related issues.
-
-The Definitive Solution: Adjusting the Shadow Bias
-The shadow clipping issue on iPhones, when not an aspect ratio problem, is almost always a precision issue with how the mobile GPU renders the shadow map. This can be resolved by adjusting the bias property of the shadow map, which helps the renderer decide whether a pixel is in shadow or not.
-
-By making the bias slightly more negative, we can resolve the artifacts that cause the shadow clipping on iOS. I have also removed the CameraHelper as it's no longer needed for debugging.
-
-Final Corrected Code
-JavaScript
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
