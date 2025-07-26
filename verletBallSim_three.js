@@ -1,3 +1,5 @@
+ERROR
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -18,7 +20,7 @@
 //  THREE.JS SCENE GLOBALS
 //================================//
 let scene, camera, renderer;
-let directionalLight, shadowHelper; // Make these globally accessible
+let directionalLight;
 
 //================================//
 //  SIMULATION GLOBALS
@@ -95,7 +97,6 @@ async function requestOrientationPermission() {
 
 // A dedicated function to update the shadow camera properties.
 function updateShadowCamera() {
-    // Return if the light hasn't been initialized yet
     if (!directionalLight) return;
 
     directionalLight.position.set(simWidth / 2, 10, 500);
@@ -109,10 +110,6 @@ function updateShadowCamera() {
     shadowCam.top = frustumSize / 2;
     shadowCam.bottom = -frustumSize / 2;
     shadowCam.updateProjectionMatrix();
-
-    if (shadowHelper) {
-        shadowHelper.update();
-    }
 }
 
 //================================//
@@ -122,53 +119,55 @@ function init() {
     console.clear();
     detectOperatingSystem();
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    simWidth = width;
-    simHeight = height; // Use full height for physics
+    const canvas = document.getElementById('simulation-canvas');
 
     // --- THREE.JS INITIALIZATION ---
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x505050);
 
-    camera = new THREE.OrthographicCamera(0, simWidth, 0, -simHeight, 1, 1000);
+    camera = new THREE.OrthographicCamera(0, 0, 0, 0, 1, 1000); // Initial setup, will be resized
     camera.position.z = 500;
 
-    // Get the canvas element from the HTML
-    const canvas = document.getElementById('simulation-canvas');
-
-    // Create the renderer and tell it to use our canvas
     renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         antialias: true
     });
-    renderer.setSize(width, height);
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
     // --- ROBUST RESIZE HANDLING ---
-    // **FIXED**: Use ResizeObserver for reliable updates, especially on mobile.
-    const resizeObserver = new ResizeObserver(entries => {
-        for (let entry of entries) {
-            const {
-                width,
-                height
-            } = entry.contentRect;
+    const resizeObserver = new ResizeObserver(() => {
+        // **FIXED**: Always use the window's inner dimensions for calculations.
+        const width = window.innerWidth;
+        const height = window.innerHeight;
 
-            simWidth = width;
-            simHeight = height;
+        simWidth = width;
+        simHeight = height;
 
-            camera.left = 0;
-            camera.right = width;
-            camera.top = 0;
-            camera.bottom = -height;
-            camera.updateProjectionMatrix();
+        camera.left = 0;
+        camera.right = width;
+        camera.top = 0;
+        camera.bottom = -height;
+        camera.updateProjectionMatrix();
 
-            renderer.setSize(width, height);
-            updateShadowCamera(); // Crucially, update shadows on every resize.
-            getOrientation();
-        }
+        renderer.setSize(width, height);
+        updateShadowCamera();
+        getOrientation();
     });
     resizeObserver.observe(canvas);
+    
+    // Initial call to set sizes
+    (() => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        simWidth = width;
+        simHeight = height;
+        camera.left = 0;
+        camera.right = width;
+        camera.top = 0;
+        camera.bottom = -height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+    })();
 
 
     // --- SHADOWS ---
@@ -183,11 +182,6 @@ function init() {
     scene.add(directionalLight);
     scene.add(directionalLight.target);
     
-    // DEBUG: Add a helper to visualize the shadow camera's frustum
-    shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-    scene.add(shadowHelper);
-
-    // Configure shadow properties
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.bias = -0.0001;
@@ -195,18 +189,17 @@ function init() {
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // Call the function to set the initial shadow properties
-    updateShadowCamera();
+    updateShadowCamera(); // Set initial shadow properties
 
     // --- GROUND PLANE & TEXTURE ---
-    const groundGeometry = new THREE.PlaneGeometry(1, 1); // Start with 1x1, will be scaled.
+    const groundGeometry = new THREE.PlaneGeometry(1, 1);
     const groundMaterial = new THREE.MeshStandardMaterial({
         color: 0xcccccc
     });
     const groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
     groundPlane.receiveShadow = true;
     groundPlane.position.set(simWidth / 2, -simHeight / 2, -10);
-    groundPlane.scale.set(simWidth * 2, simHeight * 2, 1); // Scale instead of recreating
+    groundPlane.scale.set(simWidth * 2, simHeight * 2, 1);
     scene.add(groundPlane);
 
     const textureLoader = new THREE.TextureLoader();
