@@ -1,12 +1,3 @@
-That's a sharp observation. You are correct; the shadow map calculation is being cut off because the light's angled position requires a deeper viewing area than it currently has. The shadow camera's far plane is too close, causing it to clip the scene before it reaches the bottom of the viewport.
-
-To fix this, we need to increase the directionalLight.shadow.camera.far value to ensure the shadow camera's view is deep enough to contain the entire scene from its angled position.
-
-This final version makes that adjustment.
-
-Final Corrected Code
-JavaScript
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
