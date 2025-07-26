@@ -148,6 +148,7 @@ function init() {
     renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         antialias: true
+        precision: "highp" //Force high precision from ChatGPT recommendation
     });
     renderer.setSize(width, height);
 
