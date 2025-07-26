@@ -1,3 +1,12 @@
+That green color is good news! It means the CameraHelper is updating every frame. The problem is that the helper's dimensions are not being synchronized after you changed the shadow camera's properties.
+
+You need to add one final line of code to manually update the helper's geometry after you update the camera's projection matrix. This will make the green box resize to match the new, larger shadow area you defined.
+
+Here is the complete code with the final line added. Once you run this, the green box will correctly surround your entire scene, and you can then remove the two helper lines to finalize the fix.
+
+Full Corrected Code
+JavaScript
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -154,22 +163,29 @@ function init() {
 
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+    
+    // DEBUG: Add a helper to visualize the shadow camera's frustum
+    const shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+    scene.add(shadowHelper);
 
     // Configure shadow properties for better quality
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.bias = -0.0001;
-    directionalLight.shadow.normalBias = 0.15; // Final tweak to close gap
+    directionalLight.shadow.normalBias = 0.15;
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // **FIXED**: Make the shadow camera frustum larger to prevent clipping on any device.
-    const shadowPadding = 100; // Increased padding
-    directionalLight.shadow.camera.left = -simWidth / 2 - shadowPadding;
-    directionalLight.shadow.camera.right = simWidth / 2 + shadowPadding;
-    directionalLight.shadow.camera.top = simHeight - shadowPadding; // Use a larger vertical area
-    directionalLight.shadow.camera.bottom = -simHeight - shadowPadding; // Use a larger vertical area
-    directionalLight.shadow.camera.updateProjectionMatrix(); // Apply the changes
+    // Create a robust, square shadow frustum that covers the entire scene on any device.
+    const frustumSize = Math.max(simWidth, simHeight) * 1.2; // Use the larger screen dimension with a 20% buffer
+    directionalLight.shadow.camera.left = -frustumSize / 2;
+    directionalLight.shadow.camera.right = frustumSize / 2;
+    directionalLight.shadow.camera.top = frustumSize / 2;
+    directionalLight.shadow.camera.bottom = -frustumSize / 2;
+    directionalLight.shadow.camera.updateProjectionMatrix();
+
+    // **FIXED**: Update the helper to reflect the new camera properties.
+    shadowHelper.update();
 
 
     // --- GROUND PLANE & TEXTURE ---
