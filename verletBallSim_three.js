@@ -18,6 +18,7 @@
 //  THREE.JS SCENE GLOBALS
 //================================//
 let scene, camera, renderer;
+let directionalLight, shadowHelper; // Make these globally accessible
 
 //================================//
 //  SIMULATION GLOBALS
@@ -45,13 +46,13 @@ var OS_iOS = false;
 // Initialize function
 window.onload = init;
 
-// Resize handler
+// **FIXED**: The resize handler now also updates the shadow camera.
 window.onresize = function() {
     const width = window.innerWidth;
     const height = window.innerHeight;
 
     simWidth = width;
-    simHeight = height; // Use full height for physics
+    simHeight = height;
 
     camera.left = 0;
     camera.right = width;
@@ -60,6 +61,7 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 
     renderer.setSize(width, height);
+    updateShadowCamera(); // Update shadows on resize
     getOrientation();
 };
 
@@ -110,6 +112,22 @@ async function requestOrientationPermission() {
     return false;
 }
 
+// **FIXED**: A dedicated function to update the shadow camera properties.
+function updateShadowCamera() {
+    const frustumSize = Math.max(simWidth, simHeight) * 1.2;
+    const shadowCam = directionalLight.shadow.camera;
+
+    shadowCam.left = -frustumSize / 2;
+    shadowCam.right = frustumSize / 2;
+    shadowCam.top = frustumSize / 2;
+    shadowCam.bottom = -frustumSize / 2;
+    shadowCam.updateProjectionMatrix();
+
+    if (shadowHelper) {
+        shadowHelper.update();
+    }
+}
+
 //================================//
 //      INITIALIZE SIMULATION
 //================================//
@@ -146,9 +164,9 @@ function init() {
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 
-    directionalLight.position.set(simWidth / 2, 10, 500); // Light moved closer to center
+    directionalLight.position.set(simWidth / 2, 10, 500);
     directionalLight.target.position.set(simWidth / 2, -simHeight / 2, 0);
     scene.add(directionalLight.target);
 
@@ -156,7 +174,7 @@ function init() {
     scene.add(directionalLight);
     
     // DEBUG: Add a helper to visualize the shadow camera's frustum
-    const shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+    shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
     scene.add(shadowHelper);
 
     // Configure shadow properties for better quality
@@ -167,23 +185,14 @@ function init() {
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // Create a robust, square shadow frustum that covers the entire scene on any device.
-    const frustumSize = Math.max(simWidth, simHeight) * 1.2; // Use the larger screen dimension with a 20% buffer
-    directionalLight.shadow.camera.left = -frustumSize / 2;
-    directionalLight.shadow.camera.right = frustumSize / 2;
-    directionalLight.shadow.camera.top = frustumSize / 2;
-    directionalLight.shadow.camera.bottom = -frustumSize / 2;
-    directionalLight.shadow.camera.updateProjectionMatrix();
-
-    // **FIXED**: Update the helper to reflect the new camera properties.
-    shadowHelper.update();
-
+    // Call the new function to set the initial shadow properties
+    updateShadowCamera();
 
     // --- GROUND PLANE & TEXTURE ---
     const groundGeometry = new THREE.PlaneGeometry(simWidth * 2, simHeight * 2);
     const groundMaterial = new THREE.MeshStandardMaterial({
         color: 0xcccccc
-    }); // Light grey fallback
+    });
     const groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
     groundPlane.receiveShadow = true;
     groundPlane.position.set(simWidth / 2, -simHeight / 2, -10);
@@ -284,11 +293,9 @@ var Body = function(x, y, radius, color, mass) {
     this.mesh.castShadow = true;
     scene.add(this.mesh);
 
-    // Keep a reference to the array this body is in for the fix.
     this.bodies_array = null;
 
     this.updatePosition = function(delta) {
-        // Stop the physics engine from updating a ball while it's being dragged.
         if (this.bodies_array && this.bodies_array.indexOf(this) === touch_Sel) {
             return;
         }
@@ -385,7 +392,6 @@ var Simulation = function(renderer) {
         }
 
         if (!collides) {
-            // Give the body a reference to the array it's in.
             body.bodies_array = bodies;
             bodies.push(body);
         } else {
@@ -488,7 +494,7 @@ var Simulation = function(renderer) {
             testBallColor,
             testBallMass
         );
-        newBall.bodies_array = bodies; // Also give new balls the reference
+        newBall.bodies_array = bodies;
         bodies.push(newBall);
     });
 
@@ -526,20 +532,16 @@ var Simulation = function(renderer) {
                     const collision_dist = body.radius + (wall.thickness / 2);
 
                     if (distance < collision_dist) {
-                        // 1. Correct position by pushing ball out of the wall
                         const overlap = collision_dist - distance;
                         const normal = dist_vec.normalize();
                         body.position.add(normal.clone().multiplyScalar(overlap));
 
-                        // 2. Apply bounce using impulse logic derived from ball-ball collision
                         const velocity = new THREE.Vector2().subVectors(body.position, body.previouspos);
                         const vDotN = velocity.dot(normal);
 
-                        // Only apply bounce if moving towards the wall
                         if (vDotN < 0) {
                             const impulseMagnitude = -(1 + wall_damping) * vDotN;
                             const impulse = normal.clone().multiplyScalar(impulseMagnitude);
-                            // In Verlet, adding an impulse to previouspos subtracts it from the velocity
                             body.previouspos.sub(impulse);
                         }
                     }
@@ -581,11 +583,7 @@ var Simulation = function(renderer) {
         if (isDragging && touch_Sel > -1) {
             const body = bodies[touch_Sel];
             const toCursor = new THREE.Vector2().subVectors(touch_Pos, body.position);
-
-            // By preventing the physics update on the dragged ball, we can now safely
-            // manage its previous and current position here to correctly calculate velocity.
             body.previouspos.copy(body.position);
-
             const spring_velocity = toCursor.multiplyScalar(0.25);
             body.position.add(spring_velocity);
         }
