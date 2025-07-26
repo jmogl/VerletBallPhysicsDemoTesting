@@ -1,12 +1,3 @@
-This is an exceptionally stubborn bug. The issue persists because while we're correctly resizing the camera and shadow area, we are not updating the light's target position or the ground plane's position when the screen size changes. On an iPhone, the change in aspect ratio is significant enough that the light's original target is no longer in the center of the screen, causing the shadow map to be misaligned and clipped.
-
-The definitive solution is to update the positions of the light's target and the ground plane inside the ResizeObserver along with everything else. This ensures every component of the scene is perfectly aligned every time the viewport changes.
-
-I'm confident this is the final solution.
-
-Final Corrected Code
-JavaScript
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
