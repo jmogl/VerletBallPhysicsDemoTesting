@@ -1,34 +1,3 @@
-Of course. Let's start over and solve this persistent shadow bug once and for all.
-
-The core issue is that the area where shadows are calculated (the "shadow map") is not being correctly sized and positioned for the iPhone's unique screen dimensions, especially when the browser's address bar appears or disappears.
-
-How the Shadow Map is Calculated
-Light Source: You have a DirectionalLight that shines down on the scene.
-
-Shadow Camera: This light has its own invisible camera (a OrthographicCamera in this case). This camera looks at the scene from the light's point of view.
-
-Frustum: The shadow camera has a viewing box called a frustum. Only objects inside this box can cast shadows.
-
-The Bug: Your code sets the size and position of this box only once when the page loads. On a desktop, the screen shape is close enough to what was calculated that it works. On an iPhone, the screen is much taller, and the browser UI changes the available space. Your fixed-size box is no longer tall enough to cover the whole scene, so the shadows at the bottom get "clipped" or cut off.
-
-The Definitive Solution
-The solution is to recalculate the size and position of all dimension-dependent elements whenever the screen size changes. This includes:
-
-The main camera.
-
-The renderer size.
-
-The light's position and target.
-
-The ground plane's position and scale.
-
-The shadow camera's frustum.
-
-This version implements that complete solution using a ResizeObserver for reliability. This will finally fix the shadow clipping on all devices.
-
-Final Corrected Code
-JavaScript
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
