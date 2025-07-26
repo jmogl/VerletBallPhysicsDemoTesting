@@ -240,7 +240,7 @@ function handleMotionEvent(event) {
     let ax = event.accelerationIncludingGravity.x;
     let ay = event.accelerationIncludingGravity.y;
     if (ax === null || ay === null) return;
-    const tilt_scale = 100;
+    const tilt_scale = 1000;
     let finalX, finalY;
     if (OS_iPAD || OS_iOS) {
         finalX = ax * tilt_scale;
