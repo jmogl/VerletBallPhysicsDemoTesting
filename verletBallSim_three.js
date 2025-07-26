@@ -1,5 +1,5 @@
 /*
-*	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/25/25
+*	Ball Physics Simulation Javascript (Three.js Version) - 7/26/25
 *
 *	Original Copyright: 2017+ Jeff Miller
 *	Three.js Conversion & Correction: 2025
@@ -159,16 +159,16 @@ function init() {
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.bias = -0.0001;
-    directionalLight.shadow.normalBias = 0.15; // Final tweak to close gap
+    directionalLight.shadow.normalBias = 0.15;
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // Resize the shadow camera frustum to cover the entire area
-    const shadowPadding = 50;
-    directionalLight.shadow.camera.left = -simWidth / 2 - shadowPadding;
-    directionalLight.shadow.camera.right = simWidth / 2 + shadowPadding;
-    directionalLight.shadow.camera.top = simHeight / 2 + shadowPadding;
-    directionalLight.shadow.camera.bottom = -simHeight / 2 - shadowPadding;
+    // **FIXED**: Resize the shadow camera frustum to cover the entire area reliably.
+    const shadowPadding = 100;
+    directionalLight.shadow.camera.left = -shadowPadding;
+    directionalLight.shadow.camera.right = simWidth + shadowPadding;
+    directionalLight.shadow.camera.top = shadowPadding;
+    directionalLight.shadow.camera.bottom = -simHeight - shadowPadding;
 
 
     // --- GROUND PLANE & TEXTURE ---
@@ -247,7 +247,7 @@ function handleMotionEvent(event) {
         finalY = -ay * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale;
-        finalY = ay * tilt_scale;
+        finalY = -ay * tilt_scale;
     } else {
         finalX = ax * tilt_scale;
         finalY = -ay * tilt_scale;
@@ -409,6 +409,7 @@ var Simulation = function(renderer) {
         }
         if (selectedIndex !== -1 && distTestMax < bodies[selectedIndex].radius + 50) {
             touch_Sel = selectedIndex;
+            // **FIXED**: Set previouspos only when the ball is first selected to preserve velocity on release.
             bodies[touch_Sel].previouspos.copy(bodies[touch_Sel].position);
         } else {
             touch_Sel = -1;
@@ -569,7 +570,7 @@ var Simulation = function(renderer) {
             const body = bodies[touch_Sel];
             const toCursor = new THREE.Vector2().subVectors(touch_Pos, body.position);
 
-            body.previouspos.copy(body.position);
+            // **FIXED**: The problematic line that reset previouspos on every frame has been moved.
 
             const spring_velocity = toCursor.multiplyScalar(0.25);
             body.position.add(spring_velocity);
