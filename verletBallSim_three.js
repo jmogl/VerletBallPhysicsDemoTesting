@@ -149,8 +149,8 @@ function init() {
         canvas: canvas,
         antialias: true
     });
-   // renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Add this line
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(1); // TEST
     
     // --- SHADOWS ---
     renderer.shadowMap.enabled = true;
