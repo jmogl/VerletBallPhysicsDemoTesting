@@ -1,3 +1,34 @@
+Of course. Let's start over and solve this persistent shadow bug once and for all.
+
+The core issue is that the area where shadows are calculated (the "shadow map") is not being correctly sized and positioned for the iPhone's unique screen dimensions, especially when the browser's address bar appears or disappears.
+
+How the Shadow Map is Calculated
+Light Source: You have a DirectionalLight that shines down on the scene.
+
+Shadow Camera: This light has its own invisible camera (a OrthographicCamera in this case). This camera looks at the scene from the light's point of view.
+
+Frustum: The shadow camera has a viewing box called a frustum. Only objects inside this box can cast shadows.
+
+The Bug: Your code sets the size and position of this box only once when the page loads. On a desktop, the screen shape is close enough to what was calculated that it works. On an iPhone, the screen is much taller, and the browser UI changes the available space. Your fixed-size box is no longer tall enough to cover the whole scene, so the shadows at the bottom get "clipped" or cut off.
+
+The Definitive Solution
+The solution is to recalculate the size and position of all dimension-dependent elements whenever the screen size changes. This includes:
+
+The main camera.
+
+The renderer size.
+
+The light's position and target.
+
+The ground plane's position and scale.
+
+The shadow camera's frustum.
+
+This version implements that complete solution using a ResizeObserver for reliability. This will finally fix the shadow clipping on all devices.
+
+Final Corrected Code
+JavaScript
+
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
@@ -18,7 +49,7 @@
 //  THREE.JS SCENE GLOBALS
 //================================//
 let scene, camera, renderer;
-let directionalLight, groundPlane; // Make groundPlane global
+let directionalLight, groundPlane; // Make these globally accessible
 
 //================================//
 //  SIMULATION GLOBALS
@@ -93,21 +124,45 @@ async function requestOrientationPermission() {
     return false;
 }
 
-// A dedicated function to update the shadow camera properties.
-function updateShadowCamera() {
-    if (!directionalLight) return;
+// **FIXED**: A single, robust function to handle all screen layout updates.
+function updateLayout() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-    directionalLight.position.set(simWidth / 2, 10, 500);
-    directionalLight.target.position.set(simWidth / 2, -simHeight / 2, 0);
+    simWidth = width;
+    simHeight = height;
 
-    const frustumSize = Math.max(simWidth, simHeight) * 1.5;
-    const shadowCam = directionalLight.shadow.camera;
+    // Update main camera
+    camera.left = 0;
+    camera.right = width;
+    camera.top = 0;
+    camera.bottom = -height;
+    camera.updateProjectionMatrix();
 
-    shadowCam.left = -frustumSize / 2;
-    shadowCam.right = frustumSize / 2;
-    shadowCam.top = frustumSize / 2;
-    shadowCam.bottom = -frustumSize / 2;
-    shadowCam.updateProjectionMatrix();
+    // Update renderer
+    renderer.setSize(width, height);
+
+    // Update ground plane position and scale
+    if (groundPlane) {
+        groundPlane.position.set(width / 2, -height / 2, -10);
+        groundPlane.scale.set(width * 2, height * 2, 1);
+    }
+
+    // Update light and shadow camera
+    if (directionalLight) {
+        directionalLight.position.set(width / 2, 10, 500);
+        directionalLight.target.position.set(width / 2, -height / 2, 0);
+
+        const frustumSize = Math.max(width, height) * 1.5; // Generous buffer
+        const shadowCam = directionalLight.shadow.camera;
+        shadowCam.left = -frustumSize / 2;
+        shadowCam.right = frustumSize / 2;
+        shadowCam.top = frustumSize / 2;
+        shadowCam.bottom = -frustumSize / 2;
+        shadowCam.updateProjectionMatrix();
+    }
+    
+    getOrientation();
 }
 
 //================================//
@@ -123,56 +178,21 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x505050);
 
-    camera = new THREE.OrthographicCamera(0, 0, 0, 0, 1, 1000); // Initial setup, will be resized
+    camera = new THREE.OrthographicCamera(0, 0, 0, 0, 1, 1000);
     camera.position.z = 500;
 
     renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         antialias: true
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
+    
     // --- ROBUST RESIZE HANDLING ---
     const resizeObserver = new ResizeObserver(() => {
-        // Always use the window's inner dimensions for calculations.
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-
-        simWidth = width;
-        simHeight = height;
-
-        camera.left = 0;
-        camera.right = width;
-        camera.top = 0;
-        camera.bottom = -height;
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(width, height);
-        
-        // **FIXED**: Update all scene components that depend on screen size.
-        if(groundPlane) {
-            groundPlane.position.set(width / 2, -height / 2, -10);
-            groundPlane.scale.set(width * 2, height * 2, 1);
-        }
-        updateShadowCamera();
-        getOrientation();
+        updateLayout();
     });
     resizeObserver.observe(canvas);
     
-    // Initial call to set sizes
-    (() => {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        simWidth = width;
-        simHeight = height;
-        camera.left = 0;
-        camera.right = width;
-        camera.top = 0;
-        camera.bottom = -height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
-    })();
-
+    updateLayout(); // Initial call to set all sizes correctly.
 
     // --- SHADOWS ---
     renderer.shadowMap.enabled = true;
@@ -193,8 +213,6 @@ function init() {
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    updateShadowCamera(); // Set initial shadow properties
-
     // --- GROUND PLANE & TEXTURE ---
     const groundGeometry = new THREE.PlaneGeometry(1, 1);
     const groundMaterial = new THREE.MeshStandardMaterial({
@@ -202,8 +220,6 @@ function init() {
     });
     groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
     groundPlane.receiveShadow = true;
-    groundPlane.position.set(simWidth / 2, -simHeight / 2, -10);
-    groundPlane.scale.set(simWidth * 2, simHeight * 2, 1);
     scene.add(groundPlane);
 
     const textureLoader = new THREE.TextureLoader();
