@@ -149,6 +149,7 @@ function init() {
         canvas: canvas,
         antialias: true
         precision: "highp" //Force high precision from ChatGPT recommendation
+        renderer.setPixelRatio(1); //Recommended for test
     });
     renderer.setSize(width, height);
 
