@@ -1,5 +1,5 @@
 /*
-*	Ball Physics Simulation Javascript (Three.js Version) - 7/26/25
+*	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
 *	Original Copyright: 2017+ Jeff Miller
 *	Three.js Conversion & Correction: 2025
@@ -159,16 +159,16 @@ function init() {
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.bias = -0.0001;
-    directionalLight.shadow.normalBias = 0.15;
+    directionalLight.shadow.normalBias = 0.15; // Final tweak to close gap
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 1500;
 
-    // **FIXED**: Resize the shadow camera frustum to cover the entire area reliably.
-    const shadowPadding = 100;
-    directionalLight.shadow.camera.left = -shadowPadding;
-    directionalLight.shadow.camera.right = simWidth + shadowPadding;
-    directionalLight.shadow.camera.top = shadowPadding;
-    directionalLight.shadow.camera.bottom = -simHeight - shadowPadding;
+    // Resize the shadow camera frustum to cover the entire area
+    const shadowPadding = 50;
+    directionalLight.shadow.camera.left = -simWidth / 2 - shadowPadding;
+    directionalLight.shadow.camera.right = simWidth / 2 + shadowPadding;
+    directionalLight.shadow.camera.top = simHeight / 2 + shadowPadding;
+    directionalLight.shadow.camera.bottom = -simHeight / 2 - shadowPadding;
 
 
     // --- GROUND PLANE & TEXTURE ---
@@ -247,7 +247,7 @@ function handleMotionEvent(event) {
         finalY = -ay * tilt_scale;
     } else if (OS_Android) {
         finalX = -ax * tilt_scale;
-        finalY = -ay * tilt_scale;
+        finalY = ay * tilt_scale;
     } else {
         finalX = ax * tilt_scale;
         finalY = -ay * tilt_scale;
@@ -276,7 +276,15 @@ var Body = function(x, y, radius, color, mass) {
     this.mesh.castShadow = true;
     scene.add(this.mesh);
 
+    // Keep a reference to the array this body is in for the fix.
+    this.bodies_array = null;
+
     this.updatePosition = function(delta) {
+        // Stop the physics engine from updating a ball while it's being dragged.
+        if (this.bodies_array && this.bodies_array.indexOf(this) === touch_Sel) {
+            return;
+        }
+
         const velocity = new THREE.Vector2().subVectors(this.position, this.previouspos);
         velocity.multiplyScalar(0.999);
 
@@ -369,6 +377,8 @@ var Simulation = function(renderer) {
         }
 
         if (!collides) {
+            // Give the body a reference to the array it's in.
+            body.bodies_array = bodies;
             bodies.push(body);
         } else {
             scene.remove(body.mesh);
@@ -409,8 +419,6 @@ var Simulation = function(renderer) {
         }
         if (selectedIndex !== -1 && distTestMax < bodies[selectedIndex].radius + 50) {
             touch_Sel = selectedIndex;
-            // **FIXED**: Set previouspos only when the ball is first selected to preserve velocity on release.
-            bodies[touch_Sel].previouspos.copy(bodies[touch_Sel].position);
         } else {
             touch_Sel = -1;
         }
@@ -472,6 +480,7 @@ var Simulation = function(renderer) {
             testBallColor,
             testBallMass
         );
+        newBall.bodies_array = bodies; // Also give new balls the reference
         bodies.push(newBall);
     });
 
@@ -497,24 +506,8 @@ var Simulation = function(renderer) {
             for (let i = 0; i < bodies.length; i++) {
                 const body = bodies[i];
 
-                const vx = body.position.x - body.previouspos.x;
-                const vy = body.position.y - body.previouspos.y;
-
-                if (body.position.x < body.radius) {
-                    body.position.x = body.radius;
-                    body.previouspos.x = body.position.x + vx * wall_damping;
-                } else if (body.position.x > simWidth - body.radius) {
-                    body.position.x = simWidth - body.radius;
-                    body.previouspos.x = body.position.x + vx * wall_damping;
-                }
-
-                if (body.position.y < body.radius) {
-                    body.position.y = body.radius;
-                    body.previouspos.y = body.position.y + vy * wall_damping;
-                } else if (body.position.y > simHeight - body.radius) {
-                    body.position.y = simHeight - body.radius;
-                    body.previouspos.y = body.position.y + vy * wall_damping;
-                }
+                // **FIXED**: The redundant, hard-coded boundary checks have been removed.
+                // The Wall object loop below now handles all wall collisions.
 
                 for (const wall of walls) {
                     const p1_to_body = new THREE.Vector2().subVectors(body.position, wall.p1);
@@ -528,8 +521,22 @@ var Simulation = function(renderer) {
                     const collision_dist = body.radius + (wall.thickness / 2);
 
                     if (distance < collision_dist) {
+                        // 1. Correct position by pushing ball out of the wall
                         const overlap = collision_dist - distance;
-                        body.position.add(dist_vec.normalize().multiplyScalar(overlap));
+                        const normal = dist_vec.normalize();
+                        body.position.add(normal.clone().multiplyScalar(overlap));
+
+                        // 2. Apply bounce using impulse logic derived from ball-ball collision
+                        const velocity = new THREE.Vector2().subVectors(body.position, body.previouspos);
+                        const vDotN = velocity.dot(normal);
+
+                        // Only apply bounce if moving towards the wall
+                        if (vDotN < 0) {
+                            const impulseMagnitude = -(1 + wall_damping) * vDotN;
+                            const impulse = normal.clone().multiplyScalar(impulseMagnitude);
+                            // In Verlet, adding an impulse to previouspos subtracts it from the velocity
+                            body.previouspos.sub(impulse);
+                        }
                     }
                 }
 
@@ -570,7 +577,9 @@ var Simulation = function(renderer) {
             const body = bodies[touch_Sel];
             const toCursor = new THREE.Vector2().subVectors(touch_Pos, body.position);
 
-            // **FIXED**: The problematic line that reset previouspos on every frame has been moved.
+            // By preventing the physics update on the dragged ball, we can now safely
+            // manage its previous and current position here to correctly calculate velocity.
+            body.previouspos.copy(body.position);
 
             const spring_velocity = toCursor.multiplyScalar(0.25);
             body.position.add(spring_velocity);
