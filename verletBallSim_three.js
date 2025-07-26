@@ -1,5 +1,6 @@
+Error
 /*
-*	Ball Physics Simulation Javascript (Three.js Version) - 3.0, Beta 2 -7/26/25
+*	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
 *	Original Copyright: 2017+ Jeff Miller
 *	Three.js Conversion & Correction: 2025
@@ -9,12 +10,7 @@
 *	Dependencies:
 *	- three.min.js      - WebGL 3D Library
 *	- Mainloop.js       - Managing main loop & FPS
-*
-*   Updates: Shadow map fixed and added force pull back when ball touched. 
-*
 */
-
-
 
 // Force restrictive declarations
 "use strict";
@@ -363,7 +359,7 @@ var Simulation = function(renderer) {
     let creationFailures = 0;
     const wallThickness = 10;
     
-    const k = 0.1; // Spring Constant for user ball selection, was 0.2
+    const k = 0.2;
 
     while (bodies.length < balls_Max) {
         var bodyRadius = Math.random() * 20 + 6;
@@ -499,7 +495,8 @@ var Simulation = function(renderer) {
     // --- SIMULATION LOGIC ---
     
     function UseTheForce(body) {
-        const G = 6.674e-1;
+        // **MODIFIED**: Increased gravitational constant for a stronger pull on all devices.
+        const G = 6.674e2;
         const touchMass = 1e6; 
         
         const toCursor = new THREE.Vector2().subVectors(touch_Pos, body.position);
@@ -524,7 +521,6 @@ var Simulation = function(renderer) {
         if (touch_Sel > -1) {
             const selectedBody = bodies[touch_Sel];
             // Only apply the gravity attraction when not actively dragging with the spring.
-            // The spring engages when the ball is close (in solveCollisions).
             if (!isDragging) {
                 UseTheForce(selectedBody);
             }
@@ -606,12 +602,10 @@ var Simulation = function(renderer) {
             const body = bodies[touch_Sel];
             const toCursor = new THREE.Vector2().subVectors(touch_Pos, body.position);
             
-            // **MODIFIED**: Only apply the spring force if the ball is within 2 diameters.
-            if (toCursor.length() < (body.radius * 4)) { // 2 diameters = 4 * radius
+            if (toCursor.length() < (body.radius * 4)) {
                 const spring_velocity = toCursor.multiplyScalar(k);
                 body.position.add(spring_velocity);
             } else {
-                // If not close enough for the spring, apply the gravity attraction instead.
                 UseTheForce(body);
             }
         }
