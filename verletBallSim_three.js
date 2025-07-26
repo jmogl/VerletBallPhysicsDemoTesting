@@ -1,5 +1,3 @@
-ERROR to verify reload
-
 /*
 *	Ball Physics Simulation Javascript (Three.js Version) - Final Version 7/26/25
 *
